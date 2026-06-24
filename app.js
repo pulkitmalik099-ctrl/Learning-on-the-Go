@@ -312,13 +312,24 @@ function initHome() {
   }
 }
 
+/* ===== Performance tracking ===== */
+function loadPerf(deckId) {
+  try { return JSON.parse(localStorage.getItem('lottg_perf_' + deckId)) || {}; }
+  catch (e) { return {}; }
+}
+function savePerf(deckId, data) {
+  localStorage.setItem('lottg_perf_' + deckId, JSON.stringify(data));
+}
+
 /* ===== Deck page ===== */
 function initDeck(deckId, cards) {
-  var currentPos = 0;    /* position within activeCards() */
+  var currentPos = 0;
   var isFlipped = false;
   var filterQuery = '';
+  var activeDomain = null; /* null = all domains */
   var known = loadKnown(deckId);
   var sr = loadSR(deckId);
+  var perf = loadPerf(deckId);
 
   /* theme button */
   var themeBtn = document.getElementById('theme-toggle');
@@ -345,9 +356,74 @@ function initDeck(deckId, cards) {
   /* filtered + visible indices */
   var filteredIdx = cards.map(function (_, i) { return i; });
 
+  function rebuildFilteredIdx() {
+    filteredIdx = cards.reduce(function (acc, c, i) {
+      if (activeDomain && c.domain !== activeDomain) return acc;
+      if (filterQuery && !c.q.toLowerCase().includes(filterQuery) && !c.a.toLowerCase().includes(filterQuery)) return acc;
+      acc.push(i);
+      return acc;
+    }, []);
+  }
+
   function getActiveIdx() {
     if (filterQuery) return filteredIdx; /* search: show even known */
     return filteredIdx.filter(function (i) { return !known.has(i); });
+  }
+
+  /* expose domain API for deck page */
+  window.lottgDeck = {
+    setDomain: function (domain) {
+      activeDomain = domain || null;
+      var btns = document.querySelectorAll('.domain-btn');
+      btns.forEach(function (b) {
+        b.classList.toggle('active', b.getAttribute('data-domain') === (domain || 'all'));
+      });
+      rebuildFilteredIdx();
+      updateDomainStats();
+      showCard(0);
+    }
+  };
+
+  function updateDomainStats() {
+    var domainStatEl = document.getElementById('domain-stats');
+    if (!domainStatEl) return;
+    var td = todayStr();
+    var domains = [];
+    cards.forEach(function (c) { if (c.domain && domains.indexOf(c.domain) === -1) domains.push(c.domain); });
+    domains.sort();
+    if (!domains.length) { domainStatEl.innerHTML = ''; return; }
+    var html = domains.map(function (d) {
+      var domCards = cards.reduce(function (acc, c, i) { if (c.domain === d) acc.push(i); return acc; }, []);
+      var knownCount = domCards.filter(function (i) { return known.has(i); }).length;
+      var dueCount = domCards.filter(function (i) {
+        if (known.has(i)) return false;
+        var e = sr[i]; return !e || e.dueDate <= td;
+      }).length;
+      /* performance: correct / attempted */
+      var totAttempted = 0, totCorrect = 0;
+      domCards.forEach(function (i) {
+        if (perf[i]) { totAttempted += perf[i].total; totCorrect += perf[i].correct; }
+      });
+      var accuracyPct = totAttempted ? Math.round(totCorrect / totAttempted * 100) : null;
+      var progressPct = domCards.length ? Math.round(knownCount / domCards.length * 100) : 0;
+      var barColor = accuracyPct === null ? 'var(--grad-progress)'
+        : accuracyPct >= 80 ? 'linear-gradient(90deg,#43e97b,#38f9d7)'
+        : accuracyPct >= 60 ? 'linear-gradient(90deg,#f7971e,#ffd200)'
+        : 'linear-gradient(90deg,#f5576c,#f093fb)';
+      var displayPct = accuracyPct !== null ? accuracyPct : progressPct;
+      return '<div class="domain-stat-item' + (activeDomain === d ? ' active-domain' : '') + '" onclick="window.lottgDeck.setDomain(\'' + d + '\')" style="cursor:pointer">'
+        + '<span class="domain-stat-label">' + d + '</span>'
+        + '<div class="domain-stat-bar-wrap"><div class="domain-stat-bar" style="width:' + displayPct + '%;background:' + barColor + '"></div></div>'
+        + '<span class="domain-stat-nums">'
+          + (accuracyPct !== null
+              ? '<b style="color:' + (accuracyPct >= 80 ? 'var(--success)' : accuracyPct >= 60 ? 'var(--warning)' : 'var(--danger)') + '">' + accuracyPct + '%</b> accuracy · '
+              : '')
+          + knownCount + '/' + domCards.length + ' known'
+          + (dueCount ? ' · <b>' + dueCount + ' due</b>' : '')
+        + '</span>'
+        + '</div>';
+    }).join('');
+    domainStatEl.innerHTML = html;
   }
 
   /* ---- render ---- */
@@ -431,17 +507,15 @@ function initDeck(deckId, cards) {
 
   function applyFilter(q) {
     filterQuery = q.toLowerCase().trim();
-    if (!filterQuery) {
-      filteredIdx = cards.map(function (_, i) { return i; });
-      if (searchMsg) searchMsg.textContent = '';
-    } else {
-      filteredIdx = cards.reduce(function (acc, c, i) {
-        if (c.q.toLowerCase().includes(filterQuery) || c.a.toLowerCase().includes(filterQuery)) acc.push(i);
-        return acc;
-      }, []);
-      if (searchMsg) searchMsg.textContent = filteredIdx.length
-        ? filteredIdx.length + ' card' + (filteredIdx.length !== 1 ? 's' : '') + ' matched'
-        : 'No cards matched';
+    rebuildFilteredIdx();
+    if (searchMsg) {
+      if (!filterQuery) {
+        searchMsg.textContent = '';
+      } else {
+        searchMsg.textContent = filteredIdx.length
+          ? filteredIdx.length + ' card' + (filteredIdx.length !== 1 ? 's' : '') + ' matched'
+          : 'No cards matched';
+      }
     }
     showCard(0);
   }
@@ -469,6 +543,13 @@ function initDeck(deckId, cards) {
     sr[idx] = entry;
     saveSR(deckId, sr);
 
+    /* record performance for domain stats */
+    var p = perf[idx] || { correct: 0, total: 0 };
+    p.total++;
+    if (rating !== 'again') p.correct++;
+    perf[idx] = p;
+    savePerf(deckId, perf);
+
     if (rating === 'again') {
       showToast('See again soon');
     } else {
@@ -476,6 +557,7 @@ function initDeck(deckId, cards) {
       next();
     }
     updateHUD(currentPos + 1, getActiveIdx().length);
+    updateDomainStats();
   }
 
   function toggleKnown() {
@@ -491,6 +573,7 @@ function initDeck(deckId, cards) {
     }
     saveKnown(deckId, known);
     updateKnownBtn(idx);
+    updateDomainStats();
     var newActive = getActiveIdx();
     showCard(Math.min(currentPos, Math.max(0, newActive.length - 1)));
   }
@@ -536,5 +619,7 @@ function initDeck(deckId, cards) {
   });
 
   /* initial render */
+  rebuildFilteredIdx();
+  updateDomainStats();
   showCard(0);
 }

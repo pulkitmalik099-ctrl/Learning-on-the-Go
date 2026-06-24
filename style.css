@@ -748,6 +748,90 @@ input[type="file"] { display: none; }
 /* ===== Empty state ===== */
 .empty-msg { text-align: center; color: var(--text-muted); font-size: .9rem; padding: 1rem 0 .5rem; }
 
+/* ===== Domain filter ===== */
+.domain-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin-bottom: 1rem;
+}
+.domain-btn {
+  padding: .35rem .85rem;
+  border-radius: 30px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .18s;
+  letter-spacing: .03em;
+}
+.domain-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+.domain-btn.active {
+  background: var(--grad-btn);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 3px 14px rgba(91,76,255,.35);
+}
+
+/* ===== Domain per-domain progress stats ===== */
+.domain-stats-wrap {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.25rem;
+}
+.domain-stats-title {
+  font-size: .68rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: .65rem;
+}
+.domain-stat-item {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: .45rem;
+  padding: .3rem .5rem;
+  border-radius: 8px;
+  transition: background .15s;
+}
+.domain-stat-item.active-domain {
+  background: var(--accent-light);
+}
+.domain-stat-label {
+  font-size: .73rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+.domain-stat-bar-wrap {
+  height: 5px;
+  background: var(--surface-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.domain-stat-bar {
+  height: 100%;
+  background: var(--grad-progress);
+  border-radius: 3px;
+  transition: width .4s ease;
+}
+.domain-stat-nums {
+  font-size: .7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.domain-stat-nums b { color: var(--warning); }
+
 /* ===== Responsive ===== */
 @media (max-width: 480px) {
   main { padding: 0 1rem 2.5rem; }
