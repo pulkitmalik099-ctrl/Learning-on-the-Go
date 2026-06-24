@@ -16,14 +16,16 @@ No install, no build step, no database, no internet required. The whole thing is
 - Shuffle the deck to test out of order (`S`)
 - Mark cards as Known to remove them from rotation (`K`)
 - Per-deck progress bar and stats (Known · Due today · Total)
-- **Domain filter** — on the CCA-F deck, filter by domain (D1–D5) with one click
-- **Performance by domain** — tracks accuracy % per domain based on Again/Good/Easy ratings; colour-coded green/amber/red
-- In-deck search to filter cards by keyword
+- **MCQ practice mode** — CCA-F exam-style A/B/C/D questions with instant correct/incorrect feedback
+- **Domain filter** — filter by domain (D1–D5) in both flashcard and MCQ modes
+- **Performance by domain** — tracks accuracy % per domain; colour-coded green/amber/red
+- In-deck search to filter flashcards by keyword
 - Cross-deck search on the home page
 - Dark mode toggle — persists across sessions
 - Export / Import progress as JSON (sync between devices)
 - Works fully offline — double-click `index.html`, no server needed
-- Keyboard shortcuts: `← →` navigate · `Space` flip · `S` shuffle · `K` mark known · `1/2/3` rate
+- Keyboard shortcuts (flashcards): `← →` navigate · `Space` flip · `S` shuffle · `K` mark known · `1/2/3` rate
+- Keyboard shortcuts (MCQ): `A` `B` `C` `D` select answer · `N` or `Enter` next question
 
 ---
 
@@ -31,14 +33,15 @@ No install, no build step, no database, no internet required. The whole thing is
 
 ```
 Learning-on-the-Go/
-  index.html                        ← home page — open this to start
-  get-started-with-claude.html      ← Deck 1 (25 cards)
-  lets-learn-claude-code.html       ← Deck 2 (25 cards)
-  claude-cowork.html                ← Deck 3 (25 cards)
-  claude-certified-architect.html   ← Deck 4 (80 cards, 5 domains)
-  app.js                            ← all shared logic
-  style.css                         ← all shared styling
-  search-index.js                   ← card data mirror for cross-deck search
+  index.html                            ← home page — open this to start
+  get-started-with-claude.html          ← Deck 1 · Flashcards (25 cards)
+  lets-learn-claude-code.html           ← Deck 2 · Flashcards (25 cards)
+  claude-cowork.html                    ← Deck 3 · Flashcards (25 cards)
+  claude-certified-architect.html       ← Deck 4 · Flashcards (80 cards, 5 domains)
+  claude-certified-architect-mcq.html   ← Deck 4 · MCQ Practice (80 questions, 5 domains)
+  app.js                                ← all shared logic (initDeck, initMCQ, initHome)
+  style.css                             ← all shared styling
+  search-index.js                       ← card data mirror for cross-deck search
   README.md
   .gitignore
 ```
@@ -196,7 +199,18 @@ Card data lives directly inside each deck's `.html` file (and mirrored in `searc
 ### Deck 4 — Claude Certified Architect (CCA-F)
 *Based on the [CCA-F exam](https://www.certsafari.com/anthropic/claude-certified-architect) · 80 cards · 5 domains*
 
+> **Two study modes available:**
+> - `claude-certified-architect.html` — Flip flashcards with spaced repetition (Again / Good / Easy)
+> - `claude-certified-architect-mcq.html` — MCQ practice with A/B/C/D options and instant feedback
+
 **Domains:** D1 Agentic Architecture (18) · D2 Tool Design & MCP (15) · D3 Claude Code Config (15) · D4 Prompt Engineering (16) · D5 Context & Reliability (16)
+
+#### MCQ Practice Mode
+- 80 scenario-based questions matching the CCA-F exam style
+- Select A / B / C / D — correct answer highlights green, wrong highlights red
+- Domain filter: practice one domain at a time or all together
+- Performance by domain: accuracy % tracked per domain, colour-coded green / amber / red
+- Keyboard shortcuts: `A` `B` `C` `D` to answer · `N` or `Enter` for next question
 
 #### D1 — Agentic Architecture & Orchestration
 
