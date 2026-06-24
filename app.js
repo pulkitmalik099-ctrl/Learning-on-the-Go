@@ -61,7 +61,8 @@ function startInactivityWatch() {
 var PASSPHRASES = [
   'Napster you are the best',
   'Keep Learning',
-  'Stay Motivated'
+  'Stay Motivated',
+  'AI is my friend'
 ];
 
 /* ===== Login ===== */
