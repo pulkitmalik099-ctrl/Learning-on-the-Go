@@ -62,7 +62,8 @@ var PASSPHRASES = [
   'Napster you are the best',
   'Keep Learning',
   'Stay Motivated',
-  'AI is my friend'
+  'AI is my friend',
+  'Thank you master'
 ];
 
 /* ===== Login ===== */
