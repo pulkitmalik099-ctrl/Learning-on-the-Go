@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Certified Architect – Revision on the Go</title>
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('lottg_theme') || 'light');</script>
+</head>
+<body>
+  <header class="page-header">
+    <a class="back-link" href="index.html">← Topics</a>
+    <h1>Claude Certified Architect</h1>
+    <div class="header-actions">
+      <button class="theme-btn" id="theme-toggle" title="Toggle dark mode">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="deck-header">
+      <p class="deck-meta-line">Based on the <a href="https://www.certsafari.com/anthropic/claude-certified-architect" target="_blank" rel="noopener">Claude Certified Architect (CCA-F) exam</a> · 30 cards · 5 domains</p>
+    </div>
+
+    <div class="deck-search-wrap">
+      <span style="color:var(--text-muted);font-size:0.9rem">⌕</span>
+      <input type="search" id="deck-search" placeholder="Search within this deck…" autocomplete="off">
+    </div>
+    <p class="search-matches" id="search-matches"></p>
+
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <span class="progress-text" id="progress-text">0 / 30</span>
+    </div>
+
+    <div class="card-viewport">
+      <div class="card-inner" id="card-inner">
+        <div class="card-face card-front">
+          <p class="card-text" id="card-q"></p>
+          <span class="card-hint">click · tap · space to flip</span>
+        </div>
+        <div class="card-face card-back">
+          <p class="card-text" id="card-a"></p>
+          <span class="card-hint">flip again to return</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-nav">
+      <button class="nav-btn" id="prev-btn" title="Previous (←)">‹</button>
+      <button class="flip-btn" id="flip-btn">Flip</button>
+      <button class="nav-btn" id="next-btn" title="Next (→)">›</button>
+    </div>
+    <p class="card-pos" id="card-pos">Card 1 of 30</p>
+
+    <div class="sr-controls hidden" id="sr-controls">
+      <button class="sr-btn sr-again" id="sr-again" title="Key: 1">Again</button>
+      <button class="sr-btn sr-good"  id="sr-good"  title="Key: 2">Good</button>
+      <button class="sr-btn sr-easy"  id="sr-easy"  title="Key: 3">Easy</button>
+      <button class="sr-btn sr-known" id="sr-known" title="Key: K">Mark Known</button>
+    </div>
+
+    <div class="deck-toolbar">
+      <button class="btn-secondary" id="shuffle-btn" title="Key: S">⇌ Shuffle</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><span class="stat-value" id="stat-known">0</span><span class="stat-label">Known</span></div>
+      <div class="stat"><span class="stat-value" id="stat-due">0</span><span class="stat-label">Due today</span></div>
+      <div class="stat"><span class="stat-value" id="stat-total">30</span><span class="stat-label">Total</span></div>
+    </div>
+
+    <p class="learn-next"><a href="get-started-with-claude.html">← Back to: Get Started with Claude</a></p>
+  </main>
+
+  <script>
+  var DECK_ID = 'claude-certified-architect';
+  var CARDS = [
+    /* ── Domain 1: Agentic Architecture & Orchestration ── */
+    { q: 'What are the two key stop_reason values in an agentic loop, and what does each mean?', a: '"tool_use" — the model wants to call a tool; continue the loop by executing the tool and returning results. "end_turn" — the model has finished; terminate the loop.' },
+    { q: 'What is the hub-and-spoke architecture in multi-agent systems?', a: 'A coordinator (hub) manages multiple subagents (spokes). The coordinator decomposes tasks, delegates to subagents, aggregates results, and routes all communication — subagents do not talk to each other directly.' },
+    { q: 'What must be explicitly provided when spawning a subagent?', a: 'The complete context the subagent needs — subagents have isolated context and do NOT automatically inherit anything from the coordinator. Pass all relevant findings, goals, and constraints directly in the subagent prompt.' },
+    { q: 'What is the difference between programmatic enforcement and prompt-based guidance?', a: 'Programmatic enforcement is deterministic — it blocks or transforms behaviour in code regardless of model output. Prompt-based guidance is probabilistic — the model may or may not follow it. Use programmatic enforcement when guaranteed compliance is required.' },
+    { q: 'What does a PostToolUse hook do in the Agent SDK?', a: 'It intercepts tool results after execution, allowing transformation or normalization of the result before the model sees it — e.g. stripping unnecessary fields, reformatting data, or enforcing compliance rules on the output.' },
+    { q: 'How do you resume a named session in Claude Code, and when should you prefer a fresh start instead?', a: 'Use --resume <session-name> to resume. Prefer a fresh start with an injected summary when the original session has stale results — resuming with outdated context is less reliable than starting clean and injecting a concise summary of prior findings.' },
+    { q: 'What is fork_session used for in Claude Code?', a: 'Creating independent branches from a shared session baseline — useful for exploring divergent implementation approaches in parallel without one branch affecting the other.' },
+
+    /* ── Domain 2: Tool Design & MCP Integration ── */
+    { q: 'What is the primary mechanism for LLM tool selection, and what makes it fail?', a: 'Tool descriptions are the primary signal. Failures occur when descriptions are too minimal, ambiguous, or overlapping — causing misrouting. Include input formats, example queries, edge cases, and clear boundaries to differentiate tools.' },
+    { q: 'What does the MCP isError flag communicate, and why structure error responses?', a: 'isError signals a tool failure to the agent. Structured error responses (errorCategory, isRetryable boolean, description) let the agent decide whether to retry, fall back, or escalate — generic errors hide this context and prevent appropriate recovery.' },
+    { q: 'What is the scoped tool access principle?', a: 'Each subagent should only have access to the tools relevant to its specialisation. Giving agents too many tools (18+ vs 4–5) degrades selection reliability and causes misuse of tools outside their domain.' },
+    { q: 'What is the difference between project-level and user-level MCP server scoping?', a: 'Project-level (.mcp.json) — shared via version control, applies to all team members working on the project. User-level (~/.claude.json) — personal/experimental servers, not shared, applies across all projects for that user.' },
+    { q: 'What is the difference between the Grep and Glob built-in tools?', a: 'Grep searches file CONTENTS for patterns (function names, error messages, imports). Glob matches FILE PATHS by name or extension pattern. Use Grep to find where something is written; use Glob to find files by name.' },
+    { q: 'When should you use Read + Write instead of Edit in Claude Code?', a: 'When Edit cannot find a unique anchor text match in the file. Read the full file, make the modification in memory, then Write the complete updated content back.' },
+
+    /* ── Domain 3: Claude Code Configuration & Workflows ── */
+    { q: 'What is the CLAUDE.md configuration hierarchy?', a: 'User-level (~/.claude/CLAUDE.md) applies globally but is NOT shared via version control. Project-level (root CLAUDE.md) applies to the whole project. Directory-level CLAUDE.md applies only within that directory. Lower levels inherit from higher ones.' },
+    { q: 'What is the difference between project-scoped and user-scoped slash commands?', a: 'Project-scoped commands live in .claude/commands/ and are shared with all team members via version control. User-scoped commands are personal and apply across all projects for that user only.' },
+    { q: 'What does context: fork frontmatter do in a Claude Code skill?', a: 'Runs the skill in an isolated sub-agent context — keeping verbose or exploratory output out of the main agent\'s context window, preserving its focus and token budget.' },
+    { q: 'When should you use Plan Mode vs direct execution?', a: 'Plan Mode for complex tasks: large-scale changes, architectural decisions, multi-file modifications, or when multiple approaches need evaluation before committing. Direct execution for well-scoped, understood changes like single-file bug fixes or adding a simple conditional.' },
+    { q: 'What does the -p (--print) flag do when running Claude Code in CI/CD?', a: 'Runs Claude Code in non-interactive mode — it completes the task and exits without waiting for user input. Essential for automated pipelines where interactive prompts would cause the job to hang.' },
+    { q: 'What is the interview pattern in iterative refinement?', a: 'Having Claude ask clarifying questions before implementing — surfacing design considerations and ambiguities upfront, reducing the number of revision cycles needed to reach the correct output.' },
+
+    /* ── Domain 4: Prompt Engineering & Structured Output ── */
+    { q: 'Why are explicit criteria superior to vague instructions in prompt engineering?', a: 'Vague instructions like "be conservative" fail to improve precision because the model cannot operationalise them consistently. Explicit criteria (e.g. "flag only when behaviour directly contradicts code comments") define exactly what to report vs skip, reducing false positives.' },
+    { q: 'What is the role of few-shot examples in prompting?', a: 'They demonstrate desired output format, handling of ambiguous cases, and reasoning style — enabling the model to generalise to novel patterns beyond what is explicitly described. Most effective for consistently formatted, actionable output and reducing hallucination in extraction tasks.' },
+    { q: 'What is the most reliable method for guaranteed schema-compliant structured output?', a: 'Tool use with JSON schemas as input parameters, combined with tool_choice: "any" to force the model to call the tool. This eliminates JSON syntax errors — though semantic errors (wrong values) still require validation.' },
+    { q: 'What is the retry-with-error-feedback pattern?', a: 'On extraction failure, send a follow-up request that includes the original document, the failed extraction, and the specific validation errors. This gives the model the information needed to correct its output. Note: retries are ineffective when the required information is simply absent from the source.' },
+    { q: 'What is the Message Batches API best suited for, and what are its constraints?', a: 'Non-blocking, latency-tolerant workloads — overnight reports, weekly audits, bulk classification. Offers 50% cost savings and up to 24-hour processing. NOT suitable for blocking workflows (e.g. pre-merge checks). Does not support multi-turn tool calling within a single request.' },
+    { q: 'Why is independent review more effective than self-review?', a: 'The generating model retains its own reasoning and is less likely to question its own decisions. A second independent Claude instance reviews the code without that bias, making it more likely to catch subtle issues the generator overlooked.' },
+
+    /* ── Domain 5: Context Management & Reliability ── */
+    { q: 'What is the "lost in the middle" effect?', a: 'Models process information at the beginning and end of context reliably but may omit or misweight information in the middle. Mitigation: place key findings summaries at the start of prompts and use explicit section headers to structure long contexts.' },
+    { q: 'What are appropriate escalation triggers in an agent system?', a: 'Customer explicitly requests a human agent, the request involves a policy exception or gap the agent cannot resolve, the agent cannot make progress. Sentiment-based escalation and self-reported confidence are unreliable proxies — use explicit criteria with few-shot examples.' },
+    { q: 'What structured information should error responses include in multi-agent systems?', a: 'Failure type, the attempted query, any partial results obtained, and suggested alternatives. This context lets the coordinator decide whether to retry, delegate differently, or escalate — generic error statuses prevent informed recovery.' },
+    { q: 'What are scratchpad files used for in large codebase exploration?', a: 'Persisting key findings across context boundaries — agents write discoveries to a scratchpad file and reference it in subsequent questions, preventing important information from being lost when the context window fills or a new session starts.' },
+    { q: 'What is stratified random sampling used for in AI output validation?', a: 'Measuring error rates within high-confidence extraction subsets — aggregate accuracy metrics (e.g. 97%) can mask poor performance on specific document types or fields. Stratified sampling validates that accuracy is consistent across all categories before automating.' }
+  ];
+  </script>
+  <script src="app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', function () { initLogin(function () { initDeck(DECK_ID, CARDS); }); });</script>
+</body>
+</html>

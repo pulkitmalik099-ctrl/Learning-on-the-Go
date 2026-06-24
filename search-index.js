@@ -93,5 +93,41 @@ var SEARCH_INDEX = [
       { q: 'What kinds of files can Cowork read and edit?', a: 'Documents (Word, PDF, text), spreadsheets (Excel, CSV), emails, folders, and web content in Chrome — essentially any file type your machine can open that a plugin or integration covers.' },
       { q: 'What makes Cowork suitable for team use?', a: 'Shareable skills and plugins encode team expertise once and deploy it to everyone, so the whole team benefits from consistent, high-quality automated workflows without individual setup.' }
     ]
+  },
+  {
+    deckId: 'claude-certified-architect',
+    deckTitle: 'Claude Certified Architect',
+    cards: [
+      { q: 'What are the two key stop_reason values in an agentic loop?', a: '"tool_use" — continue the loop by executing the tool and returning results. "end_turn" — the model has finished; terminate the loop.' },
+      { q: 'What is the hub-and-spoke architecture in multi-agent systems?', a: 'A coordinator (hub) manages multiple subagents (spokes), decomposing tasks, delegating, aggregating results, and routing all communication.' },
+      { q: 'What must be explicitly provided when spawning a subagent?', a: 'The complete context the subagent needs — subagents have isolated context and do NOT automatically inherit anything from the coordinator.' },
+      { q: 'What is the difference between programmatic enforcement and prompt-based guidance?', a: 'Programmatic enforcement is deterministic — it blocks or transforms behaviour in code. Prompt-based guidance is probabilistic — the model may or may not follow it.' },
+      { q: 'What does a PostToolUse hook do?', a: 'Intercepts tool results after execution, allowing transformation or normalization before the model sees it.' },
+      { q: 'When should you prefer a fresh start over resuming a session in Claude Code?', a: 'When the original session has stale results — starting clean and injecting a concise summary is more reliable than resuming with outdated context.' },
+      { q: 'What is fork_session used for?', a: 'Creating independent branches from a shared session baseline for exploring divergent implementation approaches in parallel.' },
+      { q: 'What is the primary mechanism for LLM tool selection?', a: 'Tool descriptions. Failures occur when descriptions are minimal, ambiguous, or overlapping — include input formats, examples, edge cases, and clear boundaries.' },
+      { q: 'What does the MCP isError flag communicate?', a: 'A tool failure to the agent. Structured error responses (errorCategory, isRetryable, description) let the agent decide whether to retry, fall back, or escalate.' },
+      { q: 'What is the scoped tool access principle?', a: 'Each subagent should only have access to tools relevant to its specialisation. Too many tools degrades selection reliability.' },
+      { q: 'Difference between project-level and user-level MCP server scoping?', a: 'Project-level (.mcp.json) is shared via version control for all team members. User-level (~/.claude.json) is personal and not shared.' },
+      { q: 'Difference between Grep and Glob built-in tools?', a: 'Grep searches file CONTENTS for patterns. Glob matches FILE PATHS by name or extension.' },
+      { q: 'When should you use Read + Write instead of Edit?', a: 'When Edit cannot find a unique anchor text match — Read the full file, modify, then Write the complete updated content back.' },
+      { q: 'What is the CLAUDE.md configuration hierarchy?', a: 'User-level (~/.claude/CLAUDE.md) global but not version-controlled. Project-level applies to the whole project. Directory-level applies within that directory only.' },
+      { q: 'What does context: fork frontmatter do in a skill?', a: 'Runs the skill in an isolated sub-agent context, keeping verbose output out of the main agent\'s context window.' },
+      { q: 'When should you use Plan Mode vs direct execution?', a: 'Plan Mode for complex, multi-file, architectural tasks. Direct execution for well-scoped, understood changes like single-file bug fixes.' },
+      { q: 'What does the -p flag do in Claude Code CI/CD?', a: 'Runs Claude Code in non-interactive mode — completes and exits without waiting for user input. Essential for automated pipelines.' },
+      { q: 'Why are explicit criteria superior to vague instructions in prompting?', a: 'Vague instructions like "be conservative" are not operationalisable. Explicit criteria define exactly what to report vs skip, reducing false positives.' },
+      { q: 'What is the role of few-shot examples in prompting?', a: 'Demonstrate desired output format, ambiguous-case handling, and reasoning style — enabling the model to generalise beyond explicit descriptions.' },
+      { q: 'Most reliable method for guaranteed schema-compliant output?', a: 'Tool use with JSON schemas as parameters, combined with tool_choice: "any" to force tool invocation. Eliminates JSON syntax errors.' },
+      { q: 'What is the retry-with-error-feedback pattern?', a: 'On extraction failure, resend the original document, failed extraction, and specific validation errors so the model can correct its output.' },
+      { q: 'What is the Message Batches API best suited for?', a: 'Non-blocking, latency-tolerant workloads — overnight reports, bulk classification. 50% cost savings but no guaranteed latency SLA.' },
+      { q: 'Why is independent review more effective than self-review?', a: 'The generating model retains its own reasoning and is less likely to question its decisions. An independent instance has no such bias.' },
+      { q: 'What is the "lost in the middle" effect?', a: 'Models process information at the beginning and end of context reliably but may omit information in the middle. Place key findings at the start.' },
+      { q: 'What are appropriate escalation triggers in an agent system?', a: 'Customer explicitly requests a human, policy exception or gap exists, agent cannot make progress. Sentiment and self-reported confidence are unreliable triggers.' },
+      { q: 'What structured information should error responses include in multi-agent systems?', a: 'Failure type, attempted query, partial results obtained, and suggested alternatives — enabling informed coordinator recovery.' },
+      { q: 'What are scratchpad files used for in large codebase exploration?', a: 'Persisting key findings across context boundaries so agents can reference discoveries when the context window fills or a new session starts.' },
+      { q: 'What is stratified random sampling used for in AI output validation?', a: 'Measuring error rates within high-confidence subsets — aggregate accuracy metrics can mask poor performance on specific document types or fields.' },
+      { q: 'What is the interview pattern in iterative refinement?', a: 'Having Claude ask clarifying questions before implementing — surfacing design considerations upfront to reduce revision cycles.' },
+      { q: 'What is the CCA-F exam format and passing score?', a: 'Multiple choice, scenario-based questions. Passing score: 720 out of 1000. Target audience: solution architects with 6+ months designing production Claude applications.' }
+    ]
   }
 ];
