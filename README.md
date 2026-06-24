@@ -16,6 +16,8 @@ No install, no build step, no database, no internet required. The whole thing is
 - Shuffle the deck to test out of order (`S`)
 - Mark cards as Known to remove them from rotation (`K`)
 - Per-deck progress bar and stats (Known · Due today · Total)
+- **Domain filter** — on the CCA-F deck, filter by domain (D1–D5) with one click
+- **Performance by domain** — tracks accuracy % per domain based on Again/Good/Easy ratings; colour-coded green/amber/red
 - In-deck search to filter cards by keyword
 - Cross-deck search on the home page
 - Dark mode toggle — persists across sessions
@@ -29,13 +31,14 @@ No install, no build step, no database, no internet required. The whole thing is
 
 ```
 Learning-on-the-Go/
-  index.html                    ← home page — open this to start
-  get-started-with-claude.html  ← Deck 1
-  lets-learn-claude-code.html   ← Deck 2
-  claude-cowork.html            ← Deck 3
-  app.js                        ← all shared logic
-  style.css                     ← all shared styling
-  search-index.js               ← card data mirror for cross-deck search
+  index.html                        ← home page — open this to start
+  get-started-with-claude.html      ← Deck 1 (25 cards)
+  lets-learn-claude-code.html       ← Deck 2 (25 cards)
+  claude-cowork.html                ← Deck 3 (25 cards)
+  claude-certified-architect.html   ← Deck 4 (80 cards, 5 domains)
+  app.js                            ← all shared logic
+  style.css                         ← all shared styling
+  search-index.js                   ← card data mirror for cross-deck search
   README.md
   .gitignore
 ```
@@ -187,3 +190,115 @@ Card data lives directly inside each deck's `.html` file (and mirrored in `searc
 | 23 | Why is upfront context important in Cowork vs Chat? | In Chat a clarification mid-conversation is easy. In Cowork, Claude may have already edited files by the time you clarify — good upfront context prevents costly mid-task rework. |
 | 24 | What kinds of files can Cowork read and edit? | Documents (Word, PDF, text), spreadsheets (Excel, CSV), emails, folders, and web content in Chrome — essentially any file type your machine can open that a plugin or integration covers. |
 | 25 | What makes Cowork suitable for team use? | Shareable skills and plugins encode team expertise once and deploy it to everyone, so the whole team benefits from consistent, high-quality automated workflows without individual setup. |
+
+---
+
+### Deck 4 — Claude Certified Architect (CCA-F)
+*Based on the [CCA-F exam](https://www.certsafari.com/anthropic/claude-certified-architect) · 80 cards · 5 domains*
+
+**Domains:** D1 Agentic Architecture (18) · D2 Tool Design & MCP (15) · D3 Claude Code Config (15) · D4 Prompt Engineering (16) · D5 Context & Reliability (16)
+
+#### D1 — Agentic Architecture & Orchestration
+
+| # | Question | Answer |
+|---|----------|--------|
+| 1 | What are the two key stop_reason values in an agentic loop, and what does each mean? | "tool_use" — the model wants to call a tool; execute it and return the result to continue the loop. "end_turn" — the model has finished; terminate the loop. Missing this distinction causes loops that never exit or exit prematurely. |
+| 2 | What is the hub-and-spoke architecture in multi-agent systems? | A coordinator (hub) decomposes tasks, delegates to specialised subagents (spokes), aggregates results, and routes all inter-agent communication. Subagents do not talk to each other directly — only through the coordinator. |
+| 3 | What must be explicitly provided when spawning a subagent? | The complete context the subagent needs — its goals, relevant findings, constraints, and any required data. Subagents have isolated context windows and inherit nothing from the parent automatically. |
+| 4 | What is the difference between programmatic enforcement and prompt-based guidance? | Programmatic enforcement: deterministic code-level controls that block or transform behaviour regardless of model output (hooks, filters, validators). Prompt-based guidance: probabilistic — the model may or may not comply. Use programmatic enforcement when guaranteed compliance is required. |
+| 5 | What does a PostToolUse hook do in the Agent SDK? | Intercepts tool results after execution, before the model sees them. Allows: transforming/normalising output, stripping PII, enforcing schema compliance, or injecting metadata — keeping tool-result handling deterministic. |
+| 6 | How do you resume a named session in Claude Code, and when should you prefer a fresh start? | Resume: --resume <session-name>. Prefer fresh start when: the prior session has stale intermediate results or the conversation grew too long. Start clean and inject a concise summary rather than resuming stale context. |
+| 7 | What is fork_session used for in Claude Code? | Creating independent branches from a shared session baseline — for exploring divergent implementation approaches in parallel without one branch affecting the other. |
+| 8 | What anti-pattern do arbitrary iteration caps create in agentic loops? | Premature termination before task completion. The correct exit condition is stop_reason === "end_turn" or a semantic completion check. Hard caps are acceptable only as safety rails, not primary exit conditions. |
+| 9 | What information must a structured handoff include when escalating from an agent to a human? | ① Current state of the task ② Steps already attempted ③ What information is missing or ambiguous ④ Specific decision needed from the human. |
+| 10 | What is the difference between model-driven dynamic decomposition and a pre-configured sequential pipeline? | Dynamic decomposition: coordinator uses the model to determine subtasks adaptively — better for open-ended workloads. Sequential pipeline: fixed order of steps — simpler and predictable but rigid. Use dynamic for exploratory agents; pipeline for repeatable processes. |
+| 11 | How should parallel subagents return results to a coordinator? | Via the tool result mechanism — each subagent's output is returned as a structured tool result to the coordinator. Avoid having subagents write to shared mutable state simultaneously. |
+| 12 | What is the Task tool used for in multi-agent Claude Code architectures? | Spawning subagents for focused, bounded work in parallel — e.g. analysing different files or running independent research tasks. Results are available to the coordinator when all tasks complete. |
+| 13 | When does spawning a subagent add overhead without benefit? | When the task fits in a single model call; when briefing/aggregation overhead exceeds the gain; when the task requires tight context continuity that breaks across isolated subagent contexts. |
+| 14 | How should a coordinator agent handle a subagent that returns partial results? | Treat as a structured error — log what was obtained, identify what is missing, decide to retry with a more targeted subagent, fall back, or escalate. Never silently forward incomplete results as if complete. |
+| 15 | What is the primary reliability risk of deeply nested agent hierarchies? | Error propagation — failures deep in the hierarchy may not surface meaningful context to the top-level coordinator, making recovery impossible. Also: exponential token cost and latency. |
+| 16 | What constitutes a "minimal agentic footprint" in enterprise deployments? | Request only needed permissions, avoid storing sensitive data beyond immediate use, prefer reversible actions over irreversible ones, and confirm before taking actions with broad impact. |
+| 17 | How does the Agent SDK's tool call result differ from raw LLM output? | The SDK processes stop_reason and extracts the structured tool_use block (name + input) — abstracting parsing from application logic. Raw output is an unprocessed content array. |
+| 18 | What determines whether a multi-step task should be handled by one agent vs split across subagents? | Split when subtasks are independent (parallelisable), need different tool access, or overflow context. Keep as one agent when steps depend tightly on each other or shared context is essential. |
+
+#### D2 — Tool Design & MCP Integration
+
+| # | Question | Answer |
+|---|----------|--------|
+| 19 | What is the primary mechanism for LLM tool selection, and what makes it fail? | Tool descriptions are the primary signal. Failures: descriptions too minimal, overlapping sibling tools, missing input format examples, no edge-case guidance. Fix: rich descriptions with example queries and explicit boundaries between similar tools. |
+| 20 | What does the MCP isError flag communicate, and why structure error responses? | isError: true signals a tool failure. Structured errors (errorCategory, isRetryable, suggestedAlternative) enable the coordinator to make informed recovery decisions rather than failing generically. |
+| 21 | What is the scoped tool access principle? | Each agent should only have access to tools relevant to its role. Too many tools (18 vs 4) degrades selection accuracy. Create role-specific toolsets rather than exposing a global registry to every agent. |
+| 22 | What is the difference between project-level and user-level MCP server scoping? | Project-level (.mcp.json): version-controlled, shared with all team members. User-level (~/.claude.json): personal/experimental, applies across all projects for that user only, not shared. |
+| 23 | What is the difference between the Grep and Glob built-in tools? | Grep: searches file CONTENTS for text/regex patterns. Glob: matches FILE PATHS by name or extension. Common pattern: Glob to identify candidate files → Grep to confirm content match. |
+| 24 | When should you use Read + Write instead of Edit in Claude Code? | When Edit cannot find a unique anchor text match. Read the full file, modify in memory, then Write the complete updated version back. Slower but guaranteed correct. |
+| 25 | How many tools can a model reliably differentiate before selection accuracy degrades? | Roughly 4–6 tools per agent. Beyond ~10–15 with similar descriptions, misrouting probability increases significantly. |
+| 26 | What is the difference between retryable and non-retryable MCP errors? | Retryable: transient (network timeout, rate limit). Non-retryable: permanent (invalid credentials, resource not found). isRetryable boolean in the error response communicates this. |
+| 27 | What four elements should a structured MCP error response include? | ① errorCategory ② isRetryable boolean ③ Human-readable description ④ suggestedAlternative — what the agent should try instead. |
+| 28 | What does tool_choice: "any" enforce vs tool_choice: "auto"? | "any": forces the model to call at least one tool — guarantees structured output. "auto": model decides whether to use a tool or respond directly. |
+| 29 | Why do overlapping tool descriptions cause misrouting? | The model cannot reliably distinguish similar descriptions. Fix: explicitly contrast tools ("Use THIS for X; use THAT for Y") to create clear decision boundaries. |
+| 30 | What should credentials in MCP .mcp.json files never contain, and where should they go? | Never hardcode API keys or tokens. Reference via env key pointing to an environment variable name. Store actual values in .env (gitignored) or CI/CD secrets. |
+| 31 | What are MCP resources used for, and how do they differ from MCP tools? | Resources: read-only passive data retrieval (documents, schemas). Tools: active functions that take actions or query dynamic data. Resources reduce prompt stuffing; tools enable real-time lookup. |
+| 32 | How should tool descriptions handle edge cases? | Explicitly enumerate what the tool does NOT handle: "Use this for internal employee databases only. For customer records, use the CRM tool instead." Clear exclusions are as important as inclusions. |
+| 33 | What is the "description-drift" problem in tool registries? | Implementations change but descriptions are not updated, causing the model to expect behaviour the tool no longer provides. Treat descriptions as part of the API contract — update in the same PR as implementation changes. |
+
+#### D3 — Claude Code Configuration & Workflows
+
+| # | Question | Answer |
+|---|----------|--------|
+| 34 | What is the CLAUDE.md configuration hierarchy? | ① User-level (~/.claude/CLAUDE.md): global, personal, NOT version-controlled. ② Project-level (root): shared via git, applies to the whole project. ③ Directory-level: applies only within that directory. Lower levels override higher ones. |
+| 35 | What is the difference between project-scoped and user-scoped slash commands? | Project-scoped (.claude/commands/): version-controlled, shared with all team members. User-scoped (~/.claude/commands/): personal, apply across all projects for that user only. |
+| 36 | What does context: fork frontmatter do in a Claude Code skill? | Runs the skill in an isolated sub-context — the verbose output does not pollute the main agent's context window. Useful for research/exploration skills that produce lots of intermediate output. |
+| 37 | When should you use Plan Mode vs direct execution in Claude Code? | Plan Mode: large-scale architectural changes, multi-file refactors, ambiguous requirements, multiple approaches to evaluate. Direct execution: well-scoped single-file changes, clear requirements, simple bug fixes. |
+| 38 | What does the -p (--print) flag do when running Claude Code in CI/CD? | Enables non-interactive mode — Claude completes the task and exits without prompting for user input. Required in automated pipelines where interactive prompts would cause the job to hang. |
+| 39 | What is the interview pattern in iterative Claude Code refinement? | Instructing Claude to ask clarifying questions before implementing — surfaces hidden requirements and ambiguities upfront, reducing the number of revision cycles. |
+| 40 | What does @import syntax do in CLAUDE.md? | Includes content of another file at that location — allows splitting configuration into domain-specific files (e.g. @import ./rules/api.md). Keeps individual rule files focused and independently maintainable. |
+| 41 | What is the .claude/rules/ directory used for? | Storing modular, path-specific rule files that can be imported into CLAUDE.md — allows different rules for different subdirectories. |
+| 42 | What does the allowed-tools frontmatter field do in a skill file? | Restricts which tools the skill is permitted to use. A read-only analysis skill specifying [Read, Grep, Glob] prevents accidental writes. |
+| 43 | How should path-specific rules be scoped in large monorepos? | Place a CLAUDE.md in each subdirectory needing distinct rules. Use @import in the root CLAUDE.md for shared cross-project rules. |
+| 44 | What does --output-format json do in the Claude Code CLI? | Emits Claude's response as structured JSON to stdout — enables downstream parsing in scripts or CI pipelines. |
+| 45 | What is the Explore subagent used for, vs direct Glob/Grep calls? | Explore for open-ended codebase research requiring multiple search rounds. Direct Glob/Grep for targeted, known-location lookups where you know exactly what to search. |
+| 46 | How does CLAUDE.md improve reliability in CI/CD pipelines? | Codifies project conventions (test commands, lint requirements, commit format) so Claude applies them consistently in every automated run without prompt repetition. |
+| 47 | What makes a slash command "reusable" vs one-shot? | Reusable: parameterised ($ARGUMENTS placeholder), context-agnostic, consistent quality regardless of state. One-shot: hardcoded to specific file paths or tasks. |
+| 48 | When is it appropriate to use --dangerously-skip-permissions? | Only in fully isolated environments (sandboxed containers, ephemeral CI) where the filesystem and network are disposable. Never on development machines or shared systems. |
+
+#### D4 — Prompt Engineering & Structured Output
+
+| # | Question | Answer |
+|---|----------|--------|
+| 49 | Why are explicit criteria superior to vague instructions in prompt engineering? | Vague instructions ("be conservative") cannot be operationalised consistently. Explicit criteria define exact conditions — reducing false positives and enabling consistent validation. |
+| 50 | What is the role of few-shot examples beyond format demonstration? | They calibrate handling of ambiguous cases — the model generalises from how you handled edge cases in examples to novel edge cases. Communicates implicit judgment calls that are hard to express explicitly. |
+| 51 | What is the most reliable method for guaranteed schema-compliant structured output? | Tool use with JSON schema as input_schema + tool_choice: "any" to force invocation. Eliminates JSON syntax errors; semantic errors (wrong values) still require post-extraction validation. |
+| 52 | What is the retry-with-error-feedback pattern? | On validation failure, send a follow-up containing: ① original source ② failed extraction ③ specific validation errors. Retries fail if the required information is simply absent from the source. |
+| 53 | What is the Message Batches API best suited for, and what are its constraints? | Non-blocking bulk processing — overnight reports, bulk classification. ~50% cost savings, up to 24h processing. Constraints: no multi-turn tool calls, not suitable for user-facing blocking workflows. |
+| 54 | Why is independent review more effective than self-review? | The generating model retains its own reasoning biases. An independent Claude instance has no prior context and is more likely to spot logical errors and missed edge cases. |
+| 55 | What is the difference between semantic errors and schema syntax errors in structured output? | Syntax errors: malformed JSON — caught by parsers. Semantic errors: valid JSON with wrong values (wrong dates, fabricated names) — require domain-specific business-rule validation. |
+| 56 | What does a detected_pattern field in a validation schema provide? | Categorises WHY extraction failed (e.g. "MISSING_DATE", "CONFLICTING_VALUES") — enables automated routing of different failure types to different handlers. |
+| 57 | How should optional fields be handled in a JSON extraction schema? | Mark as "required": false with a clear null convention. Ambiguity causes inconsistent output — sometimes present, sometimes absent — breaking downstream parsing. |
+| 58 | What is the optimal strategy for few-shot example count in extraction tasks? | 3–5 high-quality, diverse examples covering the most important format variation and at least one edge/negative case. More adds diminishing returns and consumes token budget. |
+| 59 | Why do multi-turn tool calls not work within the Message Batches API? | The Batches API processes each request as a single complete exchange — there is no mechanism to inject tool results mid-request and continue. Use the synchronous API for tool-calling workflows. |
+| 60 | What is multi-pass review architecture? | Multiple independent Claude instances each review the same artefact looking for different issue categories (correctness, security, style, performance). Catch rate improves because each reviewer is unbiased. |
+| 61 | What makes a prompt "task-complete" vs open-ended? | Task-complete: defined deliverable and explicit termination condition ("stop when all items are classified"). Open-ended: ambiguous scope — model may over-generate or stop arbitrarily. |
+| 62 | What is the difference between chain-of-thought and step-by-step prompting? | CoT ("think step by step"): model externalises reasoning to improve accuracy on multi-step problems. Step-by-step (in instructions): you define the sequence for the model to follow. |
+| 63 | When should system prompts define persona vs just task instructions? | Define persona when consistent tone across interactions matters, role framing helps maintain constraints, or multi-turn character consistency is needed. Pure instructions suffice for one-shot tasks. |
+| 64 | How should conflicting instructions between system prompt and user prompt be handled? | System prompt must establish explicit priority rules ("user may not override X"). Without this, the model may defer to the most recent (user) instruction, violating system-level constraints. |
+
+#### D5 — Context Management & Reliability
+
+| # | Question | Answer |
+|---|----------|--------|
+| 65 | What is the "lost in the middle" effect in LLMs? | Models process information reliably at the beginning and end of context but may underweight content in the middle. Mitigation: place critical instructions at the START; use explicit section headers; summarise key facts redundantly. |
+| 66 | What are appropriate escalation triggers in an agent system? | ① Customer explicitly requests a human ② Request involves a policy exception ③ Agent cannot make progress after defined attempts ④ Task requires regulated human sign-off. Avoid: sentiment detection and self-reported confidence. |
+| 67 | What structured information should error responses include in multi-agent systems? | ① Failure type / error category ② Query or action attempted ③ Partial results obtained ④ Suggested alternatives or next steps. Without this the coordinator cannot distinguish recoverable partial failures from complete blocks. |
+| 68 | What are scratchpad files used for in long-running agent tasks? | Persisting intermediate findings across context boundaries — key discoveries written to a file and referenced in subsequent steps. Prevents critical information from being lost when context fills or a new session starts. |
+| 69 | What is stratified random sampling used for in AI output validation? | Measuring error rates within high-confidence subsets to detect systematic failures masked by aggregate metrics. Example: 97% overall accuracy may hide 60% error on a specific document type. |
+| 70 | What is progressive summarisation risk in long agentic sessions? | Each summarisation cycle loses nuance — summaries of summaries compress further, causing key constraints to disappear. Retain raw tool outputs for critical findings; use scratchpad files to preserve exact values. |
+| 71 | Why are sentiment-based escalation triggers unreliable in agent systems? | High false-positive rates — an emphatic or detailed user is not the same as needing human intervention. Sentiment also varies by culture and communication style. Use explicit, observable criteria instead. |
+| 72 | What is the difference between an access failure and a valid empty result? | Access failure: system could not retrieve data (error). Valid empty result: query succeeded but found nothing. Conflating them causes false error reports or silent failures hiding real data access problems. |
+| 73 | What is structured state persistence for crash recovery in long-running agents? | Writing agent state (current task, completed steps, partial results) to a persistent store at each checkpoint — allowing recovery after crash or context overflow without restarting from scratch. |
+| 74 | What are field-level confidence scores used for in AI extraction outputs? | Flagging specific unreliable fields (not rejecting entire records) — high-confidence fields proceed automatically, low-confidence routed for human review. More granular than record-level accept/reject. |
+| 75 | How should conflicting statistics from multiple sources be handled in structured output? | Include all values with source attribution and a conflicts_detected flag. Never silently pick one value — route for human adjudication. |
+| 76 | Why should publication dates be required fields in structured extraction outputs? | Extracted information may be accurate as of publication but outdated later. Required date fields enable downstream filtering by recency and prevent stale data from being used as current fact. |
+| 77 | What is source attribution mapping, and why does it matter for long-document extraction? | Recording which specific passage each extracted fact came from (page, paragraph). Enables human verification, citation, and debugging without re-reading the entire document. |
+| 78 | How does context window pressure affect model accuracy, and what mitigations exist? | Models may underweight early instructions, omit detail, or become inconsistent. Mitigations: summarise completed work, evict raw tool outputs after extracting key facts, keep system prompts concise, use scratchpad files. |
+| 79 | What is "hallucination by interpolation" in RAG systems? | The model fills gaps between retrieved facts with plausible but fabricated content. Mitigation: instruct "say I don't know" rather than inferring; require source citations for every claim. |
+| 80 | When should an agent refuse to proceed rather than attempt a best-effort answer? | When required information is genuinely absent, proceeding requires fabricating data, the action is irreversible with low confidence, or the request falls outside the agent's authorised scope. |
