@@ -105,6 +105,8 @@ button:disabled { opacity: .4; cursor: default; }
 }
 [data-theme="dark"] .page-header h1 {
   background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
   -webkit-text-fill-color: #ffffff;
   color: #ffffff;
 }
