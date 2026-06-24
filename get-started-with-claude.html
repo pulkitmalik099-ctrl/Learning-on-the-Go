@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Started with Claude – Learning on the Go</title>
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('lottg_theme') || 'light');</script>
+</head>
+<body>
+  <header class="page-header">
+    <a class="back-link" href="index.html">← Topics</a>
+    <h1>Get Started with Claude</h1>
+    <div class="header-actions">
+      <button class="theme-btn" id="theme-toggle" title="Toggle dark mode">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="deck-header">
+      <p class="deck-meta-line">Based on the <a href="https://anthropic.skilljar.com/claude-101" target="_blank" rel="noopener">Claude 101 course</a> · 25 cards</p>
+    </div>
+
+    <!-- In-deck search -->
+    <div class="deck-search-wrap">
+      <span style="color:var(--text-muted);font-size:0.9rem">⌕</span>
+      <input type="search" id="deck-search" placeholder="Search within this deck…" autocomplete="off">
+    </div>
+    <p class="search-matches" id="search-matches"></p>
+
+    <!-- Progress bar -->
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <span class="progress-text" id="progress-text">0 / 25</span>
+    </div>
+
+    <!-- Flashcard -->
+    <div class="card-viewport">
+      <div class="card-inner" id="card-inner">
+        <div class="card-face card-front">
+          <p class="card-text" id="card-q"></p>
+          <span class="card-hint">click · tap · space to flip</span>
+        </div>
+        <div class="card-face card-back">
+          <p class="card-text" id="card-a"></p>
+          <span class="card-hint">flip again to return</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="card-nav">
+      <button class="nav-btn" id="prev-btn" title="Previous (←)">‹</button>
+      <button class="flip-btn" id="flip-btn">Flip</button>
+      <button class="nav-btn" id="next-btn" title="Next (→)">›</button>
+    </div>
+    <p class="card-pos" id="card-pos">Card 1 of 25</p>
+
+    <!-- Spaced repetition controls (appear after flip) -->
+    <div class="sr-controls hidden" id="sr-controls">
+      <button class="sr-btn sr-again" id="sr-again" title="Key: 1">Again</button>
+      <button class="sr-btn sr-good"  id="sr-good"  title="Key: 2">Good</button>
+      <button class="sr-btn sr-easy" id="sr-easy"  title="Key: 3">Easy</button>
+      <button class="sr-btn sr-known" id="sr-known" title="Key: K">Mark Known</button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="deck-toolbar">
+      <button class="btn-secondary" id="shuffle-btn" title="Key: S">⇌ Shuffle</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-value" id="stat-known">0</span>
+        <span class="stat-label">Known</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-due">0</span>
+        <span class="stat-label">Due today</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-total">25</span>
+        <span class="stat-label">Total</span>
+      </div>
+    </div>
+
+    <p class="learn-next"><a href="sql.html">Learn next: SQL →</a></p>
+  </main>
+
+  <script>
+  var DECK_ID = 'get-started-with-claude';
+  var CARDS = [
+    { q: 'What is Claude?', a: 'An AI assistant made by Anthropic, designed to be helpful, harmless, and honest. It can write, analyse, code, research, and hold extended conversations.' },
+    { q: 'What are the three pillars of Claude\'s design?', a: 'Helpful, Harmless, and Honest — Claude is built to be useful to users while avoiding harm and being truthful.' },
+    { q: 'What is a prompt?', a: 'Text you send to Claude to start or continue a conversation. A good prompt is clear, specific, and provides enough context for Claude to give a useful response.' },
+    { q: 'How do you get better results from Claude?', a: 'Be specific about your goal, provide relevant context, specify the format you want, and iterate — ask Claude to revise or expand if the first answer isn\'t quite right.' },
+    { q: 'What are the three main modes in the Claude desktop app?', a: 'Chat (conversational Q&A), Cowork (collaborative document creation), and Code (coding assistance and debugging).' },
+    { q: 'What is Chat mode used for?', a: 'Open-ended conversation — asking questions, brainstorming, summarising content, getting explanations, or any general task.' },
+    { q: 'What is Cowork mode in the Claude desktop app?', a: 'A collaborative workspace where you and Claude work together on documents, drafts, or structured content in real time.' },
+    { q: 'What is Code mode in the Claude desktop app?', a: 'A specialised environment for writing, reviewing, debugging, and explaining code across many programming languages.' },
+    { q: 'What are Projects in Claude?', a: 'A way to organise related conversations, files, and instructions in one place so Claude has consistent context across multiple sessions on the same topic.' },
+    { q: 'What is the benefit of using Projects?', a: 'Claude remembers the context, uploaded documents, and custom instructions you set for that project — no need to re-explain your situation each session.' },
+    { q: 'What are Artifacts in Claude?', a: 'Standalone, reusable outputs Claude creates — such as a document, code file, table, or diagram — that you can copy, download, or build on.' },
+    { q: 'How do you create an Artifact?', a: 'Ask Claude to produce a self-contained output (e.g. "write a Python script" or "create a report"). Claude renders it in a separate panel so you can work with it independently.' },
+    { q: 'What are Skills in Claude?', a: 'Pre-built or custom capabilities that extend what Claude can do — for example, browsing the web, running code, or following a specific workflow you\'ve defined.' },
+    { q: 'What does "Connecting your tools" mean in Claude?', a: 'Integrating Claude with external apps and services (calendar, email, Slack, etc.) so it can retrieve information and take actions across your workflow.' },
+    { q: 'What is Enterprise Search in Claude?', a: 'A feature that lets Claude search across your organisation\'s connected data sources (documents, wikis, emails) to find relevant information and include it in answers.' },
+    { q: 'What is Research Mode in Claude?', a: 'A deep-dive capability where Claude performs multiple searches and synthesises information from many sources to produce a thorough, cited research report.' },
+    { q: 'When should you use Research Mode?', a: 'For complex questions that benefit from broad information gathering — competitive analysis, literature reviews, market research, or any topic where depth matters.' },
+    { q: 'What is the context window?', a: 'The maximum amount of text (your messages + Claude\'s replies + any files) that Claude can process in one conversation. Information outside the window is not visible to Claude.' },
+    { q: 'How can marketers use Claude?', a: 'To draft campaigns, write copy, analyse customer feedback, and brainstorm ideas — prompting Claude with role-specific context for tailored output.' },
+    { q: 'How can developers use Claude?', a: 'For code generation, debugging, code review, writing tests, explaining legacy code, and getting documentation — in Code mode or via the API.' },
+    { q: 'How can executives or managers use Claude?', a: 'To summarise reports, prepare talking points, draft emails, analyse data, and get quick briefings — saving time on high-volume reading and writing tasks.' },
+    { q: 'What are some everyday use cases for Claude?', a: 'Writing and editing, summarising long documents, brainstorming, answering questions, drafting emails, explaining complex topics, and coding assistance.' },
+    { q: 'What should you do when Claude\'s answer is not quite right?', a: 'Iterate — tell Claude what was off ("too long", "wrong tone", "focus on X instead") and it will revise. Good prompting is a conversation, not a one-shot command.' },
+    { q: 'Does Claude require an Anthropic account to take the Claude 101 course?', a: 'No — the course on Skilljar is free to access with just an email registration, separate from an Anthropic account.' },
+    { q: 'What can you earn at the end of the Claude 101 course?', a: 'A certificate of completion from Anthropic, demonstrating proficiency with Claude\'s core features and everyday use cases.' }
+  ];
+  </script>
+  <script src="app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', function () { initDeck(DECK_ID, CARDS); });</script>
+</body>
+</html>

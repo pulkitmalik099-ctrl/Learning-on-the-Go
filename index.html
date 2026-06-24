@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learning on the Go</title>
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('lottg_theme') || 'light');</script>
+</head>
+<body>
+  <header class="page-header">
+    <h1>Learning on the Go</h1>
+    <div class="header-actions">
+      <button class="theme-btn" id="theme-toggle" title="Toggle dark mode">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="home-hero">
+      <h2>What are you studying?</h2>
+      <p>Pick a topic, or search across all your decks below.</p>
+    </div>
+
+    <!-- Cross-deck search -->
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input type="search" id="home-search" placeholder="Search all cards…" autocomplete="off">
+    </div>
+    <div class="search-results" id="search-results"></div>
+
+    <!-- Decks -->
+    <p class="section-title">Topics</p>
+    <div class="topic-grid">
+      <a class="topic-card" href="get-started-with-claude.html">
+        <div class="topic-card-title">Get Started with Claude</div>
+        <div class="topic-card-meta" id="meta-get-started-with-claude">25 cards</div>
+        <span class="topic-card-due" id="due-get-started-with-claude" style="display:none"></span>
+      </a>
+      <a class="topic-card" href="sql.html">
+        <div class="topic-card-title">SQL</div>
+        <div class="topic-card-meta" id="meta-sql">20 cards</div>
+        <span class="topic-card-due" id="due-sql" style="display:none"></span>
+      </a>
+    </div>
+
+    <!-- Keyboard shortcuts cheatsheet -->
+    <p class="section-title" style="margin-top:1.75rem">Keyboard shortcuts (on any deck)</p>
+    <div style="font-size:0.82rem;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:0.5rem 1.5rem;margin-bottom:2rem">
+      <span><kbd style="background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:0.1rem 0.4rem">Space</kbd> Flip card</span>
+      <span><kbd style="background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:0.1rem 0.4rem">← →</kbd> Prev / Next</span>
+      <span><kbd style="background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:0.1rem 0.4rem">S</kbd> Shuffle</span>
+      <span><kbd style="background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:0.1rem 0.4rem">K</kbd> Mark known</span>
+      <span><kbd style="background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:0.1rem 0.4rem">1 2 3</kbd> Again / Good / Easy</span>
+    </div>
+
+    <!-- Export / Import -->
+    <div class="data-actions">
+      <span class="data-label">Progress data</span>
+      <button class="btn-secondary" id="export-btn">⬇ Export</button>
+      <label class="file-input-label" for="import-input">
+        ⬆ Import
+        <input type="file" id="import-input" accept=".json">
+      </label>
+    </div>
+  </main>
+
+  <script src="search-index.js"></script>
+  <script src="app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', initHome);</script>
+</body>
+</html>

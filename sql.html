@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL – Learning on the Go</title>
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('lottg_theme') || 'light');</script>
+</head>
+<body>
+  <header class="page-header">
+    <a class="back-link" href="index.html">← Topics</a>
+    <h1>SQL</h1>
+    <div class="header-actions">
+      <button class="theme-btn" id="theme-toggle" title="Toggle dark mode">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="deck-header">
+      <p class="deck-meta-line">Core SQL concepts · 20 cards</p>
+    </div>
+
+    <!-- In-deck search -->
+    <div class="deck-search-wrap">
+      <span style="color:var(--text-muted);font-size:0.9rem">⌕</span>
+      <input type="search" id="deck-search" placeholder="Search within this deck…" autocomplete="off">
+    </div>
+    <p class="search-matches" id="search-matches"></p>
+
+    <!-- Progress bar -->
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <span class="progress-text" id="progress-text">0 / 20</span>
+    </div>
+
+    <!-- Flashcard -->
+    <div class="card-viewport">
+      <div class="card-inner" id="card-inner">
+        <div class="card-face card-front">
+          <p class="card-text" id="card-q"></p>
+          <span class="card-hint">click · tap · space to flip</span>
+        </div>
+        <div class="card-face card-back">
+          <p class="card-text" id="card-a"></p>
+          <span class="card-hint">flip again to return</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="card-nav">
+      <button class="nav-btn" id="prev-btn" title="Previous (←)">‹</button>
+      <button class="flip-btn" id="flip-btn">Flip</button>
+      <button class="nav-btn" id="next-btn" title="Next (→)">›</button>
+    </div>
+    <p class="card-pos" id="card-pos">Card 1 of 20</p>
+
+    <!-- Spaced repetition controls (appear after flip) -->
+    <div class="sr-controls hidden" id="sr-controls">
+      <button class="sr-btn sr-again" id="sr-again" title="Key: 1">Again</button>
+      <button class="sr-btn sr-good"  id="sr-good"  title="Key: 2">Good</button>
+      <button class="sr-btn sr-easy" id="sr-easy"  title="Key: 3">Easy</button>
+      <button class="sr-btn sr-known" id="sr-known" title="Key: K">Mark Known</button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="deck-toolbar">
+      <button class="btn-secondary" id="shuffle-btn" title="Key: S">⇌ Shuffle</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-value" id="stat-known">0</span>
+        <span class="stat-label">Known</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-due">0</span>
+        <span class="stat-label">Due today</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-total">20</span>
+        <span class="stat-label">Total</span>
+      </div>
+    </div>
+
+    <p class="learn-next"><a href="get-started-with-claude.html">← Back to: Get Started with Claude</a></p>
+  </main>
+
+  <script>
+  var DECK_ID = 'sql';
+  var CARDS = [
+    { q: 'What is a PRIMARY KEY?', a: 'A column (or set of columns) that uniquely identifies each row in a table. It cannot be NULL and must be unique across all rows.' },
+    { q: 'What is a FOREIGN KEY?', a: 'A column that references the PRIMARY KEY of another table, enforcing referential integrity — a row cannot reference a parent row that does not exist.' },
+    { q: 'What is database normalization?', a: 'Organising tables to reduce data redundancy. 1NF removes repeating groups; 2NF removes partial dependencies; 3NF removes transitive dependencies.' },
+    { q: 'What does INNER JOIN return?', a: 'Only rows where a matching record exists in BOTH tables. Rows with no match on either side are excluded.' },
+    { q: 'What does LEFT JOIN (LEFT OUTER JOIN) return?', a: 'All rows from the left table, plus matching rows from the right. Where no match exists, right-table columns are NULL.' },
+    { q: 'What is a database INDEX?', a: 'A data structure (typically a B-tree) built on a column to speed up SELECT queries at the cost of extra storage and slightly slower writes.' },
+    { q: 'What is a database transaction?', a: 'A sequence of SQL statements executed as a single unit — either all succeed and commit, or all fail and roll back, leaving the database unchanged.' },
+    { q: 'What are the ACID properties?', a: 'Atomicity (all-or-nothing), Consistency (valid state always maintained), Isolation (concurrent transactions do not interfere), Durability (committed data survives failures).' },
+    { q: 'What is a VIEW?', a: 'A named saved SELECT query that acts as a virtual table. It does not store data itself (unless materialized) and always reflects the underlying tables.' },
+    { q: 'What is a STORED PROCEDURE?', a: 'Precompiled SQL code stored in the database that can accept parameters, execute logic, and be called by name from applications or other SQL.' },
+    { q: 'What is the difference between WHERE and HAVING?', a: 'WHERE filters individual rows BEFORE aggregation. HAVING filters groups AFTER a GROUP BY clause has been applied.' },
+    { q: 'What is a subquery?', a: 'A SELECT statement nested inside another query, used as a filter condition, a scalar value, or a derived table in the FROM clause.' },
+    { q: 'UNION vs UNION ALL — what is the difference?', a: 'UNION removes duplicate rows between result sets; UNION ALL keeps all rows including duplicates and is faster because it skips the deduplication step.' },
+    { q: 'What is a CTE (Common Table Expression)?', a: 'A named temporary result set defined with WITH before a query. It improves readability and can be recursive, unlike a plain subquery.' },
+    { q: 'What is a window function?', a: 'A function (e.g. ROW_NUMBER, RANK, SUM OVER) that calculates a value across a set of rows related to the current row without collapsing them into one.' },
+    { q: 'What does EXPLAIN (or EXPLAIN ANALYZE) do?', a: 'Shows the query execution plan — the steps the database will take (or did take) to retrieve data, useful for spotting missing indexes or slow joins.' },
+    { q: 'What is denormalization?', a: 'Intentionally adding redundancy back into a schema (e.g. caching a join result as a column) to speed up reads at the cost of storage and write complexity.' },
+    { q: 'What is database sharding?', a: 'Horizontal partitioning of data across multiple servers, where each shard holds a subset of rows, allowing the system to scale writes and storage beyond one machine.' },
+    { q: 'What is database replication?', a: 'Copying data from a primary server to one or more replicas so reads can be distributed and a replica can take over if the primary fails.' },
+    { q: 'What is an ORM?', a: 'Object-Relational Mapper — a library that maps database rows to objects in code, letting developers query and manipulate data without writing raw SQL (e.g. Entity Framework, SQLAlchemy).' }
+  ];
+  </script>
+  <script src="app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', function () { initDeck(DECK_ID, CARDS); });</script>
+</body>
+</html>
