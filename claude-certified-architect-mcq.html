@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCA-F Practice MCQ – Revision on the Go</title>
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('lottg_theme') || 'light');</script>
+</head>
+<body>
+  <header class="page-header">
+    <a class="back-link" href="index.html">← Topics</a>
+    <h1>CCA-F Practice MCQ</h1>
+    <div class="header-actions">
+      <button class="theme-btn" id="theme-toggle" title="Toggle dark mode">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="deck-header">
+      <p class="deck-meta-line">Claude Certified Architect · 80 scenario-based questions · 5 domains · <a href="claude-certified-architect.html">Switch to Flashcards ↗</a></p>
+    </div>
+
+    <!-- Domain filter -->
+    <div class="domain-filter">
+      <button class="domain-btn active" data-domain="all" onclick="window.lottgDeck.setDomain(null)">All Domains</button>
+      <button class="domain-btn" data-domain="D1" onclick="window.lottgDeck.setDomain('D1')">D1 · Agentic</button>
+      <button class="domain-btn" data-domain="D2" onclick="window.lottgDeck.setDomain('D2')">D2 · Tools &amp; MCP</button>
+      <button class="domain-btn" data-domain="D3" onclick="window.lottgDeck.setDomain('D3')">D3 · Config</button>
+      <button class="domain-btn" data-domain="D4" onclick="window.lottgDeck.setDomain('D4')">D4 · Prompts</button>
+      <button class="domain-btn" data-domain="D5" onclick="window.lottgDeck.setDomain('D5')">D5 · Context</button>
+    </div>
+
+    <!-- Performance by domain -->
+    <div class="domain-stats-wrap">
+      <div class="domain-stats-title">Performance by domain · click a row to filter</div>
+      <div id="domain-stats"></div>
+    </div>
+
+    <!-- MCQ question -->
+    <div class="mcq-question-wrap">
+      <div class="mcq-header">
+        <span class="mcq-qnum" id="mcq-qnum">Question 1 of 80</span>
+        <span class="mcq-domain-tag" id="mcq-domain-tag">D1 · Agentic Architecture</span>
+      </div>
+      <p class="mcq-question" id="mcq-question"></p>
+    </div>
+
+    <!-- Options -->
+    <div class="mcq-options" id="mcq-options"></div>
+
+    <!-- Feedback -->
+    <div class="mcq-feedback hidden" id="mcq-feedback">
+      <p class="mcq-result" id="mcq-result"></p>
+    </div>
+
+    <!-- Next button -->
+    <button class="mcq-next hidden" id="mcq-next">Next Question →</button>
+
+    <!-- Progress bar -->
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <span class="progress-text" id="progress-text">0 / 80 done</span>
+    </div>
+
+    <p class="mcq-kbd-hint">
+      <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> select &nbsp;·&nbsp; <kbd>N</kbd> or <kbd>Enter</kbd> next question
+    </p>
+
+    <p class="learn-next"><a href="claude-certified-architect.html">← Switch to Flashcard mode</a></p>
+  </main>
+
+  <script>
+  var DECK_ID = 'cca-mcq';
+  var CARDS = [
+    /* ── D1: Agentic Architecture & Orchestration (18) ── */
+    { domain:'D1', q:'When an LLM responds with stop_reason "tool_use" in an agentic loop, what is the correct next action?',
+      options:['Terminate the loop and return the partial response to the user','Execute the requested tool and return the result to continue the loop','Ask the user for permission before executing the tool','Log the request and retry with a different prompt'], correct:1 },
+
+    { domain:'D1', q:'In a hub-and-spoke multi-agent architecture, how do subagents communicate with each other?',
+      options:['Directly via a shared in-memory state object','Through a shared message queue','They do not — all communication routes through the coordinator hub','Via tool calls that reference each other by agent ID'], correct:2 },
+
+    { domain:'D1', q:'When a coordinator spawns a subagent, what context does the subagent automatically inherit?',
+      options:['The full conversation history of the parent session','The parent\'s tool access and permission settings','The parent\'s memory and scratchpad files','None — subagents have completely isolated context windows'], correct:3 },
+
+    { domain:'D1', q:'Which type of control guarantees that agent behaviour constraints are enforced regardless of model output?',
+      options:['Prompt-based guidance with detailed system instructions','Programmatic enforcement via hooks and validators','Few-shot examples demonstrating correct behaviour','Role-based persona definition in the system prompt'], correct:1 },
+
+    { domain:'D1', q:'What does a PostToolUse hook enable in the Agent SDK?',
+      options:['Preventing specific tools from being called by the model','Transforming or normalising tool results before the model processes them','Scheduling tool calls for deferred execution','Caching tool results to reduce repeated API calls'], correct:1 },
+
+    { domain:'D1', q:'When should you prefer starting a fresh Claude Code session over resuming an existing named session?',
+      options:['When you want to reduce token usage in the new session','When the previous session contains stale intermediate results that could mislead the agent','When the task is significantly more complex than the original','When working on a different file than the original session'], correct:1 },
+
+    { domain:'D1', q:'What is the primary purpose of fork_session in Claude Code?',
+      options:['Creating an automatic backup before making destructive changes','Sharing a read-only view of a session with another team member','Exploring divergent implementation approaches in parallel from a shared baseline','Resuming a crashed session from the last checkpoint'], correct:2 },
+
+    { domain:'D1', q:'An agentic loop uses a fixed cap of 10 iterations as its primary exit condition. What problem does this create?',
+      options:['It increases token costs beyond budget','It causes premature termination before task completion if the task needs more than 10 steps','It prevents the agent from using tool calls after iteration 5','It causes the model to rush decisions in early iterations'], correct:1 },
+
+    { domain:'D1', q:'A coordinator receives "Error: operation failed" from a subagent. Why is this response insufficient for recovery?',
+      options:['The error message is too long for the coordinator\'s context','Without failure type, partial results, and suggested alternatives, the coordinator cannot determine whether to retry, fall back, or escalate','The coordinator needs the subagent\'s model version to diagnose the issue','The error response should include a timestamp for audit purposes'], correct:1 },
+
+    { domain:'D1', q:'What is the primary reliability risk of deeply nested agent hierarchies (coordinator → agent → subagent → sub-subagent)?',
+      options:['Exponentially increasing API costs at each level','Slow response times due to serialised execution','Error propagation — failures deep in the hierarchy may not surface meaningful context to the top-level coordinator','Context window overflow in the deepest leaf agents'], correct:2 },
+
+    { domain:'D1', q:'An agent is about to delete 500 files matching a pattern. According to the "minimal agentic footprint" principle, what should it do?',
+      options:['Proceed immediately — efficiency is the primary goal','Request elevated permissions to ensure the deletion completes without interruption','Confirm with the user before taking this irreversible, broad-impact action','Delete 10 files first to test the pattern, then proceed with the rest'], correct:2 },
+
+    { domain:'D1', q:'A task requires analysing 20 independent log files for error patterns. What is the best multi-agent approach?',
+      options:['Process all 20 files sequentially in a single agent session','Spawn parallel subagents — each file is independent and can be analysed simultaneously','Spawn 20 subagents that communicate directly with each other to share findings','Append all 20 files to the system prompt and process in one call'], correct:1 },
+
+    { domain:'D1', q:'What is the Task tool in Claude Code primarily used for?',
+      options:['Creating and managing to-do lists within the project','Spawning subagents to execute focused, bounded work in parallel','Tracking which files have been modified during a session','Scheduling follow-up tasks for future sessions'], correct:1 },
+
+    { domain:'D1', q:'What is the correct interpretation of stop_reason "end_turn" in an agentic loop?',
+      options:['The model ran out of context space and must be prompted to continue','The model hit a rate limit and is requesting a retry','The model has finished its response — the loop should terminate','The model is waiting for a tool result before continuing'], correct:2 },
+
+    { domain:'D1', q:'Which element is NOT required in a structured handoff when escalating from an AI agent to a human?',
+      options:['Current state of the task and what was accomplished','Steps already attempted and their outcomes','The agent\'s internal confidence score for its last response','The specific decision or information needed from the human'], correct:2 },
+
+    { domain:'D1', q:'What is the key distinction between model-driven dynamic decomposition and a pre-configured sequential pipeline?',
+      options:['Dynamic decomposition executes faster due to parallel processing','Sequential pipelines are more accurate because they use fixed logic','Dynamic decomposition uses the model to adaptively determine subtasks; sequential pipelines follow a fixed pre-defined order','Dynamic decomposition requires more API calls per task'], correct:2 },
+
+    { domain:'D1', q:'Multiple subagents complete work in parallel. How should their results be consolidated?',
+      options:['Each subagent writes results to a shared file that all agents read','Subagents send results directly to each other for cross-validation','Each subagent\'s output is returned as a structured tool result to the coordinator, which processes all results','The last subagent to finish aggregates all previous results'], correct:2 },
+
+    { domain:'D1', q:'When does spawning a subagent add overhead without meaningful benefit?',
+      options:['When the task involves more than 5 different tools','When the task can be completed within a single focused model call','When the task requires knowledge of the project\'s git history','When the user wants results in under 10 seconds'], correct:1 },
+
+    /* ── D2: Tool Design & MCP Integration (15) ── */
+    { domain:'D2', q:'What is the primary mechanism by which an LLM selects which tool to call when multiple tools are available?',
+      options:['The order in which tools are listed in the API request','The tool\'s measured response latency from previous calls','The semantic content of each tool\'s description','The number of parameters each tool accepts'], correct:2 },
+
+    { domain:'D2', q:'An MCP tool sets isError: true. What additional structured data is most critical for informed agent recovery?',
+      options:['The tool\'s execution time in milliseconds','The server\'s memory usage at time of failure','errorCategory and isRetryable boolean to distinguish failure types','The full server-side stack trace'], correct:2 },
+
+    { domain:'D2', q:'An agent is given access to 18 tools spanning multiple domains. What is the most likely consequence?',
+      options:['The agent performs better because it has more options','Tool selection accuracy degrades significantly, leading to misrouted calls','API costs increase proportionally to the number of tools registered','The agent refuses to select tools and asks the user for guidance'], correct:1 },
+
+    { domain:'D2', q:'You need to find all files that import a specific module across a large codebase. Which built-in Claude Code tool is most appropriate?',
+      options:['Glob — to match file paths that contain the module name','Grep — to search file contents for the import statement','Read — to open each file individually and check its imports','Task — to spawn a subagent dedicated to searching the codebase'], correct:1 },
+
+    { domain:'D2', q:'The Edit tool fails because the target text appears three times in the file. What is the correct fallback?',
+      options:['Delete the file and ask the user to recreate it with a unique marker','Ask the user to manually make the edit and confirm when done','Use a regex-based find-and-replace with additional surrounding context','Read the full file, modify the content in memory, then Write the complete updated file back'], correct:3 },
+
+    { domain:'D2', q:'An MCP tool fails with an expired authentication token. What value should isRetryable have?',
+      options:['true — auth issues resolve themselves after a timeout','true — the agent should attempt with the same token again','false — only the application can refresh the token; retrying with the same credentials will fail again','false — all authentication errors require human intervention before any retry'], correct:2 },
+
+    { domain:'D2', q:'A team wants all developers to share the same MCP database server configuration when cloning the repo. Where should it go?',
+      options:['Each developer\'s ~/.claude.json personal settings file','A project-level .mcp.json file at the repo root, committed to version control','The CI/CD system\'s secrets manager only','An environment variable that each developer sets manually'], correct:1 },
+
+    { domain:'D2', q:'A search tool queries a database and returns an empty array. How should the MCP tool represent this?',
+      options:['isError: true with errorCategory "NO_RESULTS_FOUND"','An empty result payload with isError: false — the query succeeded, it simply found nothing','isError: true with isRetryable: true to prompt the agent to broaden the search','A timeout error, since empty results likely indicate a query issue'], correct:1 },
+
+    { domain:'D2', q:'Two tools both have descriptions that say "retrieves customer information." A query arrives. What will most likely happen?',
+      options:['The agent calls both tools and merges results','The agent automatically selects the most recently registered tool','The agent may misroute to the wrong tool due to the ambiguous, overlapping descriptions','The agent asks the user which tool to call'], correct:2 },
+
+    { domain:'D2', q:'What does setting tool_choice: "any" guarantee that tool_choice: "auto" does not?',
+      options:['The model selects the tool with the highest accuracy rating','The model uses every available tool exactly once per request','The model generates a response in the minimum possible tokens','The model calls at least one tool, ensuring structured output rather than a prose response'], correct:3 },
+
+    { domain:'D2', q:'A .mcp.json file is committed to version control. What must it never directly contain?',
+      options:['The server\'s hostname and port number','Tool descriptions longer than 200 characters','API keys, tokens, or passwords — these must be referenced via environment variables','The list of allowed tools for each agent role'], correct:2 },
+
+    { domain:'D2', q:'What is the primary purpose of MCP resources, as distinct from MCP tools?',
+      options:['Storing authentication credentials for tool calls','Providing executable functions that perform write operations','Exposing read-only data (documents, schemas, policies) the model can reference without invoking executable logic','Caching the results of frequently called tools'], correct:2 },
+
+    { domain:'D2', q:'Tool A: "Queries employee records." Tool B: "Retrieves HR data including employee records." What problem does this create?',
+      options:['A naming conflict that prevents both tools from loading simultaneously','Semantic overlap that causes the agent to misroute between the two tools','A permissions conflict if both tools access the same database','A performance issue if both are called on every request'], correct:1 },
+
+    { domain:'D2', q:'Which practice most effectively prevents tool description-drift in a production system?',
+      options:['Automatically regenerating all descriptions with AI every month','Requiring description updates in the same PR as implementation changes, treating them as part of the API contract','Adding a version number suffix to each tool name when the implementation changes','Storing all descriptions in a separate repository with its own review process'], correct:1 },
+
+    { domain:'D2', q:'A write-to-database tool times out without confirming success. Should isRetryable be true or false?',
+      options:['false — write operations should never be retried to avoid duplicates','true — the write may not have completed; a retry is appropriate for this transient failure','false — the user must manually confirm before any write operation retry','true — all timeout errors are retryable by definition'], correct:1 },
+
+    /* ── D3: Claude Code Configuration & Workflows (15) ── */
+    { domain:'D3', q:'A CLAUDE.md file is placed inside packages/api/ in a monorepo. When does it take effect?',
+      options:['Immediately for all directories in the project, overriding the root CLAUDE.md','Only when Claude is actively working within the packages/api/ directory','It is ignored — only root-level and user-level CLAUDE.md files are read','At all times, but with lower priority than root-level rules'], correct:1 },
+
+    { domain:'D3', q:'A team wants all members to automatically have a /run-tests slash command when they clone the project. Where should the command file be stored?',
+      options:['Each developer\'s ~/.claude/commands/ directory, set up during onboarding','The project\'s .claude/commands/ directory, committed to version control','Inline in the root CLAUDE.md file as a slash command definition','A shared cloud storage folder linked in the project README'], correct:1 },
+
+    { domain:'D3', q:'A research skill generates hundreds of lines of intermediate output. Which frontmatter setting prevents this from cluttering the main agent\'s context?',
+      options:['allowed-tools: [Read, Grep]','isolation: sandboxed','context: fork','scope: background'], correct:2 },
+
+    { domain:'D3', q:'A task requires refactoring a core authentication module across 12 files with unclear dependencies. Which approach is most appropriate?',
+      options:['Direct execution with auto-accept enabled for speed','Plan Mode — evaluate the architectural approach and identify affected files before any modifications','Run parallel subagents, one per file, to execute changes simultaneously','Start with direct execution; switch to Plan Mode only if errors occur'], correct:1 },
+
+    { domain:'D3', q:'Which flag is required to use Claude Code in a GitHub Actions workflow without interactive prompts?',
+      options:['--auto-approve --silent','--headless --batch','-p (--print) for non-interactive mode','--no-confirm --json-output'], correct:2 },
+
+    { domain:'D3', q:'A project has separate rule sets for the API layer, frontend, and database layer. The root CLAUDE.md is getting very long. What is the best approach?',
+      options:['Create three separate root-level CLAUDE.md files — one per layer','Use @import in the root CLAUDE.md to include focused, domain-specific rule files','Move all rules to a single CLAUDE.md in the src/ directory','Store rules in environment variables and reference them in prompts'], correct:1 },
+
+    { domain:'D3', q:'A slash command should analyse any file the developer specifies, not a hardcoded one. What makes this possible?',
+      options:['Hardcoding absolute file paths and instructing developers to edit the command per use','Parameterising the command with the $ARGUMENTS placeholder, provided by the developer at invocation','Storing the target file path in a .claude/config.json file the command reads','Creating a separate version of the command for each common file type'], correct:1 },
+
+    { domain:'D3', q:'Should you use Plan Mode or direct execution for: "add a null check to the validateEmail function"?',
+      options:['Plan Mode — always safer for any code modification','Direct execution — the task is well-scoped, clear, and affects a single function','Plan Mode — any function involving validation warrants careful planning','Direct execution only if auto-accept is disabled'], correct:1 },
+
+    { domain:'D3', q:'A skill file must prevent the agent from accidentally deleting or writing files. Which frontmatter field achieves this?',
+      options:['scope: readonly','permissions: read-only','context: isolated','allowed-tools: [Read, Grep, Glob]'], correct:3 },
+
+    { domain:'D3', q:'A CI script needs to capture Claude\'s PR assessment as structured data for downstream processing. Which flag enables this?',
+      options:['--format structured','--output-format json','--serialize response','--machine-readable'], correct:1 },
+
+    { domain:'D3', q:'A developer is unsure which files across a large codebase handle rate limiting. Should they use Glob, Grep, or the Explore subagent?',
+      options:['Glob — to find files with "rate" in the filename','Grep — to search file contents for rate-limiting logic','The Explore subagent — open-ended research requiring multiple iterative rounds is best delegated to avoid cluttering the main context','Read — to scan each file in the project directory'], correct:2 },
+
+    { domain:'D3', q:'Why should testing rules be placed in a separate @import file rather than inline in the root CLAUDE.md?',
+      options:['Inline rules are ignored by Claude for test files','Separate files allow testing rules to be independently maintained and potentially reused across projects','Claude reads @imported files with higher priority than inline content','CLAUDE.md has a maximum size limit that requires splitting large rule sets'], correct:1 },
+
+    { domain:'D3', q:'How does CLAUDE.md most directly improve consistency in CI/CD pipelines?',
+      options:['It speeds up Claude\'s model inference time in cloud environments','It reduces the number of API calls needed per task','It codifies conventions so Claude applies them in every automated run without repeating instructions in each prompt','It prevents Claude from generating code that fails unit tests'], correct:2 },
+
+    { domain:'D3', q:'In which environment is --dangerously-skip-permissions safe to use?',
+      options:['A developer\'s local machine when working on a personal project','A shared staging server with a copy of production data','An ephemeral, sandboxed CI container where all changes are discarded after the job completes','Any environment where the developer has admin rights'], correct:2 },
+
+    { domain:'D3', q:'What problem does the interview pattern specifically solve that direct implementation does not?',
+      options:['It produces higher-quality code output per generation','It reduces token usage during implementation','It surfaces design ambiguities and hidden requirements before any code is written, reducing costly revision cycles','It automatically generates unit tests for the implemented code'], correct:2 },
+
+    /* ── D4: Prompt Engineering & Structured Output (16) ── */
+    { domain:'D4', q:'A code review prompt says "be conservative when flagging issues." Results are inconsistent across runs. What is the root cause?',
+      options:['The code being reviewed is too complex for the instruction to apply','The instruction is placed in the system prompt rather than the user prompt','"Be conservative" is vague and cannot be operationalised consistently — different runs interpret it differently','The model needs more examples of what "conservative" looks like in code review'], correct:2 },
+
+    { domain:'D4', q:'Beyond demonstrating output format, what is the most important function of few-shot examples in a complex extraction prompt?',
+      options:['Reducing hallucinations by providing factual context for the model to draw from','Teaching the model which programming language to use for code outputs','Calibrating how the model handles ambiguous edge cases by demonstrating your judgment on similar examples','Speeding up response generation by pre-loading expected output patterns'], correct:2 },
+
+    { domain:'D4', q:'You need Claude to return a JSON object with 8 required fields reliably. Which approach eliminates JSON syntax errors most effectively?',
+      options:['Adding "Output only valid JSON, double-check your brackets" to the system prompt','Showing 5 examples of correctly formatted JSON in the prompt','Using tool use with a JSON schema as input_schema combined with tool_choice: "any"','Post-processing with a JSON linter and requesting a correction on any parse failure'], correct:2 },
+
+    { domain:'D4', q:'Claude extracts contract data but returns dates in MM/DD/YYYY instead of YYYY-MM-DD. What should the retry request include?',
+      options:['The instructions again with the date format requirement highlighted in bold','A new example document that uses the correct date format','The original document, the failed extraction output, and the specific validation error','A different system prompt that removes all date formatting instructions and starts fresh'], correct:2 },
+
+    { domain:'D4', q:'Which workload is UNSUITABLE for the Message Batches API?',
+      options:['Classifying 50,000 customer support tickets by topic overnight','Generating weekly product description updates for 10,000 catalogue items','Producing a risk assessment a loan officer must review before approving a real-time application','Enriching a research database with summaries of 5,000 academic papers monthly'], correct:2 },
+
+    { domain:'D4', q:'A team uses Claude to review its own AI-generated code for bugs. Results are poor. What is the most likely explanation?',
+      options:['Claude cannot perform code review on code it has generated','The code review prompt lacks detail about which bug categories to check','The generating model retains its reasoning biases and tends to overlook the same issues it made when generating','Claude needs access to the full codebase to review a single function effectively'], correct:2 },
+
+    { domain:'D4', q:'An extraction pipeline shows 97% overall accuracy on 10,000 documents. Before full automation, which technique best detects systematic failures in a specific document subtype?',
+      options:['Review the 300 documents where Claude expressed low confidence','Re-run the pipeline with a more capable model version','Use stratified random sampling to measure accuracy within each document type separately','Add more few-shot examples covering the most common document types and re-test'], correct:2 },
+
+    { domain:'D4', q:'A structured extraction schema includes a "failure_category" field. What is its primary purpose?',
+      options:['Recording the Claude model version that produced the output','Storing the raw text segment that caused the extraction to fail','Categorising the specific reason for failure (e.g. "MISSING_DATE") to enable automated downstream routing','Flagging outputs that scored below a confidence threshold for human review'], correct:2 },
+
+    { domain:'D4', q:'A JSON schema includes "middle_name" which is absent in most source documents. How should this field be defined?',
+      options:['As a required field with a default value of "" (empty string) to ensure consistent output shape','Remove it from the schema — optional fields cannot be represented in JSON schemas','As required: false with an explicit null convention so parsers handle its absence consistently','Create two separate schemas — one including the field and one without'], correct:2 },
+
+    { domain:'D4', q:'Why does the Message Batches API not support multi-turn tool calling workflows?',
+      options:['Tool calls require real-time network access that conflicts with batch processing','The Batches API has a maximum request size that tool schemas exceed','Each batch item is processed as a single, complete exchange — there is no mechanism to inject tool results mid-request and continue','Tool calling is only supported in Claude\'s interactive chat interface, not the API'], correct:2 },
+
+    { domain:'D4', q:'A security team wants to maximise vulnerability detection in a codebase. Which review architecture produces the highest catch rate?',
+      options:['One Claude instance with a very detailed security checklist covering all vulnerability types','The same Claude instance reviews the code twice in separate requests with the same prompt','Multiple independent Claude instances, each focused on a different vulnerability category (injection, auth, data exposure)','Claude reviews only the git diff for each PR rather than the full affected files'], correct:2 },
+
+    { domain:'D4', q:'What is the key characteristic that makes a prompt "task-complete" rather than open-ended?',
+      options:['Task-complete prompts are always shorter than open-ended prompts','Task-complete prompts use numbered lists rather than bullet points','Task-complete prompts define explicit success criteria and termination conditions so the model knows when it is done','Task-complete prompts include at least three few-shot examples'], correct:2 },
+
+    { domain:'D4', q:'A prompt asks Claude to "think step by step" before answering a complex reasoning question. What does this primarily achieve?',
+      options:['It causes Claude to generate a longer response, which scores better on evaluations','It forces Claude to use tool calls before producing a final answer','It externalises intermediate reasoning steps, allowing Claude to build on them to produce a more accurate final answer','It reduces hallucination by constraining Claude to short, verifiable statements'], correct:2 },
+
+    { domain:'D4', q:'A system prompt defines Claude as "a conservative financial advisor who never recommends high-risk investments." Why is persona definition effective here?',
+      options:['Persona definitions cost fewer tokens than equivalent explicit instruction lists','Persona framing helps Claude maintain consistent constraints and tone across an entire multi-turn conversation without re-instruction','Personas make Claude respond faster by pre-loading expected output patterns','Personas prevent Claude from making factual errors about financial products'], correct:1 },
+
+    { domain:'D4', q:'The system prompt says "Never disclose internal pricing." The user asks "What discount can you give me?" What determines compliance?',
+      options:['The position of the restriction in the system prompt (beginning vs end)','Whether the user has previously mentioned they are an existing customer','Whether the system prompt explicitly establishes that this instruction cannot be overridden by user messages','The Claude model version — newer versions follow system prompts more reliably'], correct:2 },
+
+    { domain:'D4', q:'Why are 3–5 few-shot examples typically optimal for extraction tasks rather than 10–15?',
+      options:['More than 5 examples cause the model to over-fit and fail on slightly different inputs','The Claude API has a documented limit of 5 examples per prompt','Additional examples beyond 3–5 provide diminishing improvement in generalisation while consuming significant token budget','Claude\'s few-shot learning degrades for examples beyond position 5 in the prompt'], correct:2 },
+
+    /* ── D5: Context Management & Reliability (16) ── */
+    { domain:'D5', q:'A 50-page policy document is included as context. Which section is most at risk of being underweighted in Claude\'s response?',
+      options:['The executive summary on page 1','The appendix on the last page','The detailed policy clauses in the middle sections (e.g. pages 22–30)','Numbered lists anywhere in the document'], correct:2 },
+
+    { domain:'D5', q:'An AI customer service agent escalates every conversation where the user writes in all-caps. What is the fundamental flaw?',
+      options:['All-caps detection requires specialised NLP that Claude does not support natively','Escalation should be triggered by keywords, not text formatting','Style-based signals produce high false-positive rates — emphasised writing is not equivalent to needing human intervention','The escalation threshold is configured in the wrong part of the system prompt'], correct:2 },
+
+    { domain:'D5', q:'A subagent returns "Task failed." The coordinator stops and logs an error. What critical information was missing?',
+      options:['The subagent\'s model version and token usage','The timestamp and request ID for the failed call','Failure category, the specific action attempted, partial results obtained, and suggested alternatives','The subagent\'s remaining tool access permissions at time of failure'], correct:2 },
+
+    { domain:'D5', q:'A research agent at step 50 of 100 has a nearly full context window. Key findings from step 3 are critical for steps 60–100. What is the best preservation strategy?',
+      options:['Ask the user to manually note the step-3 findings and re-provide them later','Summarise the entire conversation into a 200-word paragraph at step 50','Write key findings to a scratchpad file and reference it explicitly in subsequent step prompts','Start a new session and repeat steps 1–50 with the new knowledge gained'], correct:2 },
+
+    { domain:'D5', q:'An AI pipeline shows 96% accuracy across 10,000 insurance claims. Before automating, which technique best reveals if dental claims have a higher error rate?',
+      options:['Manually review the 400 claims where Claude assigned a low confidence score','Re-run the pipeline with a more capable model to improve overall accuracy','Use stratified random sampling to measure accuracy within each claim type separately','Add dental-specific few-shot examples and re-run the entire batch'], correct:2 },
+
+    { domain:'D5', q:'In a long task, the coordinator summarises completed steps before each new one. After 30 steps it contradicts earlier constraints. What is the most likely cause?',
+      options:['The model\'s temperature setting caused increasingly random outputs','Network latency caused some step responses to arrive out of order','Progressive summarisation compressed away specific constraints from early steps that later summaries omitted','The system prompt was evicted from the context window due to its length'], correct:2 },
+
+    { domain:'D5', q:'A product search tool queries for "blue 4K TVs under $500" and returns an empty list. The agent treats this as an error. Why is this incorrect?',
+      options:['Empty search results always indicate a query syntax error and should be retried','The tool should return null, not an empty list, when no results match','An empty list is a valid empty result — the query succeeded but found no matching products, which is not an error condition','The agent should retry with a relaxed query before treating the result as an error'], correct:2 },
+
+    { domain:'D5', q:'A long-running agent crashes at step 47 of 200. Without any state persistence mechanism, what must happen?',
+      options:['The agent automatically resumes from step 47 using its internal memory','Steps 1–47 are cached by the API and can be replayed on restart','The entire task must restart from step 1, losing all prior work','The system restores state from the last API response received'], correct:2 },
+
+    { domain:'D5', q:'Claude extracts data from medical records. Company names and dates are reliable; diagnostic codes are error-prone. What is the most efficient validation strategy?',
+      options:['Manually review every record for every field before any data is used','Reject and re-extract any record where at least one field fails validation','Apply field-level confidence scores — auto-approve reliable fields and route only low-confidence fields for human review','Re-extract all records using a higher-quality model to improve diagnostic code accuracy'], correct:2 },
+
+    { domain:'D5', q:'A financial extraction finds the annual report states revenue as $4.2B while the press release states $4.5B. How should structured output represent this?',
+      options:['Use the annual report figure as the more authoritative source','Average the two figures and note the discrepancy in a comment field','Include both values with source attribution and set a conflicts_detected flag for human adjudication','Ask the user which source to trust before completing the extraction'], correct:2 },
+
+    { domain:'D5', q:'A structured extraction schema omits the publication date field to simplify output. Why is this a problem?',
+      options:['Claude cannot accurately extract other date fields without a reference publication date','Regulators require publication dates on all structured financial data','Extracted information may be accurate as of publication but outdated by the time it is consumed, with no way to filter by recency','Without a date field, Claude\'s JSON output will contain a syntax error'], correct:2 },
+
+    { domain:'D5', q:'A QA reviewer cannot find where "founding year: 1987" came from in a 200-page source document. What field in the extraction output would have solved this instantly?',
+      options:['A confidence score indicating how certain Claude was about the value','A source attribution mapping linking the value to the specific page and paragraph in the source document','A list of all pages Claude read while performing the extraction','A timestamp showing when this specific field was extracted'], correct:1 },
+
+    { domain:'D5', q:'A RAG system retrieves two passages about a company\'s regional market share but neither mentions global percentage. Claude responds "42% global market share." This is an example of:',
+      options:['Successful contextual reasoning from partial information','Normal and expected model behaviour for quantitative questions','Hallucination by interpolation — filling the gap between retrieved facts with plausible but fabricated content','A retrieval failure that should trigger a retry with a different query'], correct:2 },
+
+    { domain:'D5', q:'A chatbot followed its system prompt constraints perfectly at the start but ignores key constraints 80 messages later. What is the most likely cause?',
+      options:['The model version was automatically updated mid-conversation','API rate limiting caused some messages to be dropped from the conversation history','The "lost in the middle" effect — context window pressure caused early system prompt constraints to be underweighted','The system prompt expired due to caching policies after 60 messages'], correct:2 },
+
+    { domain:'D5', q:'An agent is asked about current stock prices but only has access to market data from 6 months ago. What should it do?',
+      options:['Provide the 6-month-old prices with a note that they may have changed slightly','Estimate current prices by applying average market growth rates to the old data','Clearly state that current price data is not available and decline to provide stale figures as current fact','Search its tool registry for a real-time price API and attempt to call it'], correct:2 },
+
+    { domain:'D5', q:'Which escalation trigger is most reliable and least likely to produce false positives in a customer service agent?',
+      options:['The customer\'s message contains three or more negative sentiment words','The customer has sent more than four messages in the current session','The agent\'s internal confidence score drops below 70%','The customer explicitly states "I want to speak to a manager" or "escalate this to a human"'], correct:3 }
+  ];
+  </script>
+  <script src="app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', function () { initLogin(function () { initMCQ(DECK_ID, CARDS); }); });</script>
+</body>
+</html>

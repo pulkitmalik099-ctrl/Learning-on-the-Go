@@ -312,6 +312,197 @@ function initHome() {
   }
 }
 
+/* ===== MCQ page ===== */
+function initMCQ(deckId, cards) {
+  var currentPos = 0;
+  var activeDomain = null;
+  var answered = false;
+  var filteredIdx = [];
+  var perf = loadPerf(deckId);
+
+  var DOMAIN_LABELS = { D1:'Agentic Architecture', D2:'Tool Design & MCP', D3:'Claude Code Config', D4:'Prompt Engineering', D5:'Context & Reliability' };
+
+  function rebuildIdx() {
+    filteredIdx = cards.reduce(function(acc, c, i) {
+      if (activeDomain && c.domain !== activeDomain) return acc;
+      acc.push(i);
+      return acc;
+    }, []);
+  }
+
+  window.lottgDeck = {
+    setDomain: function(domain) {
+      activeDomain = domain || null;
+      document.querySelectorAll('.domain-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-domain') === (domain || 'all'));
+      });
+      rebuildIdx();
+      updateMCQDomainStats();
+      currentPos = 0;
+      answered = false;
+      showQuestion(0);
+    }
+  };
+
+  /* DOM refs */
+  var qnumEl    = document.getElementById('mcq-qnum');
+  var dtagEl    = document.getElementById('mcq-domain-tag');
+  var questionEl = document.getElementById('mcq-question');
+  var optionsEl  = document.getElementById('mcq-options');
+  var feedbackEl = document.getElementById('mcq-feedback');
+  var resultEl   = document.getElementById('mcq-result');
+  var nextBtn    = document.getElementById('mcq-next');
+  var progFill   = document.getElementById('progress-fill');
+  var progText   = document.getElementById('progress-text');
+
+  function showQuestion(pos) {
+    if (!filteredIdx.length) {
+      if (questionEl) questionEl.textContent = 'No questions in this domain.';
+      if (optionsEl) optionsEl.innerHTML = '';
+      if (feedbackEl) feedbackEl.classList.add('hidden');
+      if (nextBtn) nextBtn.classList.add('hidden');
+      return;
+    }
+    currentPos = Math.max(0, Math.min(pos, filteredIdx.length - 1));
+    var idx = filteredIdx[currentPos];
+    var card = cards[idx];
+    answered = false;
+
+    if (feedbackEl) feedbackEl.classList.add('hidden');
+    if (nextBtn) nextBtn.classList.add('hidden');
+
+    if (qnumEl) qnumEl.textContent = 'Question ' + (currentPos + 1) + ' of ' + filteredIdx.length;
+    if (dtagEl) dtagEl.textContent = card.domain + ' · ' + (DOMAIN_LABELS[card.domain] || card.domain);
+    if (questionEl) questionEl.textContent = card.q;
+
+    var letters = ['A', 'B', 'C', 'D'];
+    if (optionsEl) {
+      optionsEl.innerHTML = card.options.map(function(opt, i) {
+        return '<button class="mcq-option" data-idx="' + i + '">'
+          + '<span class="mcq-option-letter">' + letters[i] + '</span>'
+          + '<span class="mcq-option-text">' + esc(opt) + '</span>'
+          + '</button>';
+      }).join('');
+      optionsEl.querySelectorAll('.mcq-option').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (answered) return;
+          selectOption(parseInt(btn.getAttribute('data-idx')));
+        });
+      });
+    }
+    updateMCQProgress();
+  }
+
+  function selectOption(selectedIdx) {
+    answered = true;
+    var idx = filteredIdx[currentPos];
+    var card = cards[idx];
+    var isCorrect = selectedIdx === card.correct;
+
+    var p = perf[idx] || { correct: 0, total: 0 };
+    p.total++;
+    if (isCorrect) p.correct++;
+    perf[idx] = p;
+    savePerf(deckId, perf);
+
+    var btns = optionsEl ? optionsEl.querySelectorAll('.mcq-option') : [];
+    btns.forEach(function(btn, i) {
+      btn.disabled = true;
+      if (i === card.correct) btn.classList.add('correct');
+      else if (i === selectedIdx && !isCorrect) btn.classList.add('wrong');
+    });
+
+    if (feedbackEl) feedbackEl.classList.remove('hidden');
+    if (resultEl) {
+      resultEl.textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect — the correct answer is highlighted.';
+      resultEl.className = 'mcq-result ' + (isCorrect ? 'correct' : 'wrong');
+    }
+    if (nextBtn) nextBtn.classList.remove('hidden');
+
+    updateMCQDomainStats();
+    updateMCQProgress();
+  }
+
+  function updateMCQProgress() {
+    var total = filteredIdx.length;
+    var pct = total > 0 ? Math.round(currentPos / total * 100) : 0;
+    if (progFill) progFill.style.width = pct + '%';
+    if (progText) progText.textContent = currentPos + ' / ' + total + ' done';
+  }
+
+  function updateMCQDomainStats() {
+    var el = document.getElementById('domain-stats');
+    if (!el) return;
+    var domains = [];
+    cards.forEach(function(c) { if (c.domain && domains.indexOf(c.domain) < 0) domains.push(c.domain); });
+    domains.sort();
+    el.innerHTML = domains.map(function(d) {
+      var domIdx = cards.reduce(function(acc, c, i) { if (c.domain === d) acc.push(i); return acc; }, []);
+      var totAtt = 0, totCorr = 0;
+      domIdx.forEach(function(i) { if (perf[i]) { totAtt += perf[i].total; totCorr += perf[i].correct; } });
+      var acc = totAtt ? Math.round(totCorr / totAtt * 100) : null;
+      var pct = totAtt ? Math.min(100, Math.round(totAtt / domIdx.length * 100)) : 0;
+      var barColor = acc === null ? 'var(--border)'
+        : acc >= 80 ? 'linear-gradient(90deg,#43e97b,#38f9d7)'
+        : acc >= 60 ? 'linear-gradient(90deg,#f7971e,#ffd200)'
+        : 'linear-gradient(90deg,#f5576c,#f093fb)';
+      return '<div class="domain-stat-item' + (activeDomain === d ? ' active-domain' : '') + '" onclick="window.lottgDeck.setDomain(\'' + d + '\')" style="cursor:pointer">'
+        + '<span class="domain-stat-label">' + d + '</span>'
+        + '<div class="domain-stat-bar-wrap"><div class="domain-stat-bar" style="width:' + pct + '%;background:' + barColor + '"></div></div>'
+        + '<span class="domain-stat-nums">'
+          + (acc !== null ? '<b style="color:' + (acc >= 80 ? 'var(--success)' : acc >= 60 ? 'var(--warning)' : 'var(--danger)') + '">' + acc + '%</b> · ' : '')
+          + totAtt + '/' + domIdx.length + ' attempted'
+        + '</span></div>';
+    }).join('');
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function() {
+      if (currentPos < filteredIdx.length - 1) {
+        showQuestion(currentPos + 1);
+      } else {
+        /* session complete */
+        var totAtt = filteredIdx.length;
+        var totCorr = filteredIdx.reduce(function(s, i) { return s + (perf[i] && perf[i].total > 0 && perf[i].correct / perf[i].total >= 0.5 ? 1 : 0); }, 0);
+        if (questionEl) questionEl.textContent = 'Session complete! You got ' + totCorr + ' of ' + totAtt + ' correct.';
+        if (optionsEl) optionsEl.innerHTML = '';
+        if (feedbackEl) feedbackEl.classList.add('hidden');
+        if (nextBtn) nextBtn.classList.add('hidden');
+        if (progFill) progFill.style.width = '100%';
+        if (progText) progText.textContent = totAtt + ' / ' + totAtt + ' done';
+        var restart = document.createElement('button');
+        restart.className = 'mcq-restart';
+        restart.textContent = '↺ Restart';
+        restart.onclick = function() { window.lottgDeck.setDomain(activeDomain); };
+        if (optionsEl) optionsEl.appendChild(restart);
+      }
+    });
+  }
+
+  /* keyboard: A/B/C/D to select, N / Enter for next */
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    var map = { 'a':0,'b':1,'c':2,'d':3 };
+    var key = e.key.toLowerCase();
+    if (!answered && map[key] !== undefined) {
+      selectOption(map[key]);
+    } else if (answered && (e.key === 'n' || e.key === 'Enter' || e.key === 'ArrowRight')) {
+      if (nextBtn && !nextBtn.classList.contains('hidden')) nextBtn.click();
+    }
+  });
+
+  /* theme button */
+  var themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) {
+    themeBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀' : '☾';
+    themeBtn.addEventListener('click', toggleTheme);
+  }
+
+  rebuildIdx();
+  updateMCQDomainStats();
+  showQuestion(0);
+}
+
 /* ===== Performance tracking ===== */
 function loadPerf(deckId) {
   try { return JSON.parse(localStorage.getItem('lottg_perf_' + deckId)) || {}; }
