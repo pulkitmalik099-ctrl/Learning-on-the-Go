@@ -32,7 +32,8 @@ function showTimeoutOverlay() {
   setTimeout(function () { inp.focus(); }, 60);
 
   function tryResume() {
-    if (inp.value.trim().toLowerCase() === 'napster you are the best') {
+    var typed = inp.value.trim().toLowerCase();
+    if (PASSPHRASES.some(function (p) { return typed === p.toLowerCase(); })) {
       sessionStorage.setItem('lottg_auth', '1');
       overlay.style.transition = 'opacity 0.25s';
       overlay.style.opacity = '0';
@@ -56,6 +57,11 @@ function startInactivityWatch() {
   resetInactivityTimer();
 }
 
+/* ===== Passphrases — add or remove entries freely, any will be accepted ===== */
+var PASSPHRASES = [
+  'Napster you are the best'
+];
+
 /* ===== Login ===== */
 function initLogin(onSuccess) {
   if (sessionStorage.getItem('lottg_auth') === '1') { startInactivityWatch(); onSuccess && onSuccess(); return; }
@@ -65,28 +71,45 @@ function initLogin(onSuccess) {
   overlay.innerHTML =
     '<div class="login-box">' +
       '<div class="login-title">Welcome</div>' +
-      '<div class="login-tagline">Napster you are the best</div>' +
+      '<div class="login-tagline" id="login-tagline">' + PASSPHRASES[0] + '</div>' +
       '<input class="login-input" id="login-inp" type="text" placeholder="Type the passphrase…" autocomplete="off" spellcheck="false">' +
       '<div class="login-err" id="login-err"></div>' +
       '<button class="login-submit" id="login-submit">Continue →</button>' +
     '</div>';
   document.body.appendChild(overlay);
 
-  var inp = overlay.querySelector('#login-inp');
-  var err = overlay.querySelector('#login-err');
-  var btn = overlay.querySelector('#login-submit');
+  var inp     = overlay.querySelector('#login-inp');
+  var err     = overlay.querySelector('#login-err');
+  var btn     = overlay.querySelector('#login-submit');
+  var tagline = overlay.querySelector('#login-tagline');
+
+  /* cycle passphrases on display */
+  var phraseIdx = 0;
+  var cycleTimer = PASSPHRASES.length > 1 ? setInterval(function () {
+    tagline.classList.add('fade-out');
+    setTimeout(function () {
+      phraseIdx = (phraseIdx + 1) % PASSPHRASES.length;
+      tagline.textContent = PASSPHRASES[phraseIdx];
+      tagline.classList.remove('fade-out');
+    }, 400);
+  }, 2800) : null;
 
   setTimeout(function () { inp.focus(); }, 60);
 
+  function cleanup() { if (cycleTimer) clearInterval(cycleTimer); }
+
   function tryLogin() {
-    if (inp.value.trim().toLowerCase() === 'napster you are the best') {
+    var typed = inp.value.trim().toLowerCase();
+    var match = PASSPHRASES.some(function (p) { return typed === p.toLowerCase(); });
+    if (match) {
+      cleanup();
       sessionStorage.setItem('lottg_auth', '1');
       overlay.style.transition = 'opacity 0.25s';
       overlay.style.opacity = '0';
       setTimeout(function () { overlay.remove(); startInactivityWatch(); onSuccess && onSuccess(); }, 260);
     } else {
       inp.classList.remove('shake');
-      void inp.offsetWidth; /* restart animation */
+      void inp.offsetWidth;
       inp.classList.add('shake');
       err.textContent = 'Not quite — try again.';
       inp.select();
