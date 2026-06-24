@@ -119,6 +119,6 @@
   ];
   </script>
   <script src="app.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', function () { initDeck(DECK_ID, CARDS); });</script>
+  <script>document.addEventListener('DOMContentLoaded', function () { initLogin(function () { initDeck(DECK_ID, CARDS); }); });</script>
 </body>
 </html>

@@ -71,6 +71,6 @@
 
   <script src="search-index.js"></script>
   <script src="app.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', initHome);</script>
+  <script>document.addEventListener('DOMContentLoaded', function () { initLogin(function () { initHome(); }); });</script>
 </body>
 </html>

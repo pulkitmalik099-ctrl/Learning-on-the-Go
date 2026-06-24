@@ -1,3 +1,44 @@
+/* ===== Login ===== */
+function initLogin(onSuccess) {
+  if (sessionStorage.getItem('lottg_auth') === '1') { onSuccess && onSuccess(); return; }
+
+  var overlay = document.createElement('div');
+  overlay.className = 'login-overlay';
+  overlay.innerHTML =
+    '<div class="login-box">' +
+      '<div class="login-title">Welcome</div>' +
+      '<div class="login-tagline">Napster you are the best</div>' +
+      '<input class="login-input" id="login-inp" type="text" placeholder="Type the passphrase…" autocomplete="off" spellcheck="false">' +
+      '<div class="login-err" id="login-err"></div>' +
+      '<button class="login-submit" id="login-submit">Continue →</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+
+  var inp = overlay.querySelector('#login-inp');
+  var err = overlay.querySelector('#login-err');
+  var btn = overlay.querySelector('#login-submit');
+
+  setTimeout(function () { inp.focus(); }, 60);
+
+  function tryLogin() {
+    if (inp.value.trim().toLowerCase() === 'napster you are the best') {
+      sessionStorage.setItem('lottg_auth', '1');
+      overlay.style.transition = 'opacity 0.25s';
+      overlay.style.opacity = '0';
+      setTimeout(function () { overlay.remove(); onSuccess && onSuccess(); }, 260);
+    } else {
+      inp.classList.remove('shake');
+      void inp.offsetWidth; /* restart animation */
+      inp.classList.add('shake');
+      err.textContent = 'Not quite — try again.';
+      inp.select();
+    }
+  }
+
+  btn.addEventListener('click', tryLogin);
+  inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') tryLogin(); });
+}
+
 /* ===== Theme (runs immediately on parse to avoid flash) ===== */
 (function () {
   var t = localStorage.getItem('lottg_theme') || 'light';
