@@ -20,7 +20,7 @@ function showTimeoutOverlay() {
     '<div class="login-box">' +
       '<div class="login-title">Still there?</div>' +
       '<div class="login-tagline" style="color:var(--text-muted)">You were inactive for 3 minutes.<br>Enter the passphrase to continue.</div>' +
-      '<input class="login-input" id="timeout-inp" type="text" placeholder="Type the passphrase…" autocomplete="off" spellcheck="false">' +
+      '<input class="login-input" id="timeout-inp" type="text" placeholder="Type any of the passphrase from above…" autocomplete="off" spellcheck="false">' +
       '<div class="login-err" id="timeout-err"></div>' +
       '<button class="login-submit" id="timeout-submit">Continue →</button>' +
     '</div>';
@@ -76,7 +76,7 @@ function initLogin(onSuccess) {
     '<div class="login-box">' +
       '<div class="login-title">Welcome</div>' +
       '<div class="login-tagline" id="login-tagline">' + PASSPHRASES[0] + '</div>' +
-      '<input class="login-input" id="login-inp" type="text" placeholder="Type the passphrase…" autocomplete="off" spellcheck="false">' +
+      '<input class="login-input" id="login-inp" type="text" placeholder="Type any of the passphrase from above…" autocomplete="off" spellcheck="false">' +
       '<div class="login-err" id="login-err"></div>' +
       '<button class="login-submit" id="login-submit">Continue →</button>' +
     '</div>';
