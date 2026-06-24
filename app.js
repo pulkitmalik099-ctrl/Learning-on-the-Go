@@ -59,7 +59,9 @@ function startInactivityWatch() {
 
 /* ===== Passphrases — add or remove entries freely, any will be accepted ===== */
 var PASSPHRASES = [
-  'Napster you are the best'
+  'Napster you are the best',
+  'Keep Learning',
+  'Stay Motivated'
 ];
 
 /* ===== Login ===== */
