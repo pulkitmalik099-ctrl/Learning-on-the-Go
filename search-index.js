@@ -2,6 +2,37 @@
    Keep in sync with each deck's CARDS array when you add or edit cards. */
 var SEARCH_INDEX = [
   {
+    deckId: 'lets-learn-claude-code',
+    deckTitle: "Let's Learn Claude Code",
+    cards: [
+      { q: 'What is Claude Code?', a: 'An AI coding agent — not just a chat tool — that can autonomously read files, write code, run commands, and operate across your entire codebase inside your terminal or IDE.' },
+      { q: 'How is Claude Code different from a chat-based AI tool?', a: 'A chat tool only converses. Claude Code is an agentic system: it takes actions — reading files, running tests, editing code, executing commands — in an autonomous loop until the task is done.' },
+      { q: 'What is the agentic loop?', a: 'The core mechanism where Claude Code repeatedly reasons, calls tools (read file, run command, edit code), observes the result, and decides the next step — cycling until the goal is achieved.' },
+      { q: 'What platforms and editors does Claude Code support?', a: 'Terminal (any shell), VS Code, JetBrains IDEs, the Claude desktop app, and a web-based interface.' },
+      { q: 'What are the prerequisites for using Claude Code?', a: 'Basic familiarity with a code editor and the command line, plus a Claude Pro, Max, or Enterprise subscription — or an Anthropic API key.' },
+      { q: 'What is the four-phase Claude Code workflow?', a: 'Explore → Plan → Code → Commit. First understand the codebase, then plan the approach, then implement, then commit with a clear message.' },
+      { q: 'What happens in the Explore phase?', a: 'Claude Code reads and searches the codebase to build context — understanding file structure, existing patterns, dependencies, and relevant code before touching anything.' },
+      { q: 'What happens in the Plan phase?', a: 'Claude Code (or you in Plan Mode) lays out the steps to complete the task — which files to change, what logic to add, and in what order — before writing any code.' },
+      { q: 'What is Plan Mode in Claude Code?', a: 'A mode where Claude Code outlines its intended approach and waits for your approval before executing any actions, giving you a chance to redirect or refine the plan.' },
+      { q: 'What happens in the Code phase?', a: 'Claude Code implements the plan — creating or editing files, writing code, and running commands — guided by what it learned in Explore and decided in Plan.' },
+      { q: 'What happens in the Commit phase?', a: 'Claude Code stages changes and creates a descriptive git commit, summarising what was changed and why, completing the development loop.' },
+      { q: 'What is "approval mode" in Claude Code?', a: 'A setting where Claude Code asks for your confirmation before executing each action (file write, command run, etc.), giving you fine-grained control over what it does.' },
+      { q: 'What is auto-accept in Claude Code?', a: 'A mode that lets Claude Code execute actions without pausing for approval each time — useful for trusted, well-understood tasks where you want uninterrupted flow.' },
+      { q: 'What is the CLAUDE.md file?', a: 'A markdown file in your project root that gives Claude Code persistent memory about the project — conventions, architecture, commands to run, things to avoid — loaded automatically each session.' },
+      { q: 'Why is CLAUDE.md useful?', a: 'Without it, you must re-explain project context every session. CLAUDE.md lets Claude Code know your stack, coding standards, test commands, and any project-specific rules from the start.' },
+      { q: 'What are Subagents in Claude Code?', a: 'Delegated agents spun up to handle a sub-task independently, so the main agent\'s context window stays focused and uncluttered while parallel or isolated work is done separately.' },
+      { q: 'What are Skills in Claude Code?', a: 'Pre-built or custom slash-command capabilities that extend Claude Code\'s default behaviour — for example /code-review, /simplify, or a custom workflow you define.' },
+      { q: 'What are MCP Servers in Claude Code?', a: 'Model Context Protocol servers that connect Claude Code to external tools and data sources — databases, APIs, services — so it can retrieve live information or trigger external actions.' },
+      { q: 'What are Hooks in Claude Code?', a: 'Shell commands that run automatically at specific events (e.g. before a tool call, after a commit) to enforce formatting, block certain commands, or trigger notifications deterministically.' },
+      { q: 'What is the /compact command?', a: 'Optimises token usage by summarising older parts of the conversation, reducing context window consumption so you can keep working on long tasks without hitting the limit.' },
+      { q: 'What is the /clear command?', a: 'Removes sections of context from the conversation — useful for wiping irrelevant history and giving Claude Code a cleaner working state for a new sub-task.' },
+      { q: 'What is the /context command?', a: 'Shows the current state of the context window — what Claude Code can currently "see" — so you can understand what information is in scope.' },
+      { q: 'What are Tools & Permissions in Claude Code?', a: 'The system that controls which actions Claude Code is allowed to take — reading files, running shell commands, making network requests — configurable per project or globally.' },
+      { q: 'How does Claude Code help with code review?', a: 'It can read a diff or branch, identify bugs, spot style issues, suggest simplifications, and even post inline comments on a GitHub PR — all from the terminal.' },
+      { q: 'What is context window management and why does it matter in Claude Code?', a: 'Managing how much text is in the active conversation. A full context window slows performance and can cause Claude Code to lose earlier details — /compact and /clear help keep it efficient.' }
+    ]
+  },
+  {
     deckId: 'get-started-with-claude',
     deckTitle: 'Get Started with Claude',
     cards: [

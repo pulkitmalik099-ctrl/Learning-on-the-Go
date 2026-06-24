@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Let's Learn Claude Code – Learning on the Go</title>
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('lottg_theme') || 'light');</script>
+</head>
+<body>
+  <header class="page-header">
+    <a class="back-link" href="index.html">← Topics</a>
+    <h1>Let's Learn Claude Code</h1>
+    <div class="header-actions">
+      <button class="theme-btn" id="theme-toggle" title="Toggle dark mode">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="deck-header">
+      <p class="deck-meta-line">Based on the <a href="https://anthropic.skilljar.com/claude-code-101" target="_blank" rel="noopener">Claude Code 101 course</a> · 25 cards</p>
+    </div>
+
+    <!-- In-deck search -->
+    <div class="deck-search-wrap">
+      <span style="color:var(--text-muted);font-size:0.9rem">⌕</span>
+      <input type="search" id="deck-search" placeholder="Search within this deck…" autocomplete="off">
+    </div>
+    <p class="search-matches" id="search-matches"></p>
+
+    <!-- Progress bar -->
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <span class="progress-text" id="progress-text">0 / 25</span>
+    </div>
+
+    <!-- Flashcard -->
+    <div class="card-viewport">
+      <div class="card-inner" id="card-inner">
+        <div class="card-face card-front">
+          <p class="card-text" id="card-q"></p>
+          <span class="card-hint">click · tap · space to flip</span>
+        </div>
+        <div class="card-face card-back">
+          <p class="card-text" id="card-a"></p>
+          <span class="card-hint">flip again to return</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="card-nav">
+      <button class="nav-btn" id="prev-btn" title="Previous (←)">‹</button>
+      <button class="flip-btn" id="flip-btn">Flip</button>
+      <button class="nav-btn" id="next-btn" title="Next (→)">›</button>
+    </div>
+    <p class="card-pos" id="card-pos">Card 1 of 25</p>
+
+    <!-- Spaced repetition controls (appear after flip) -->
+    <div class="sr-controls hidden" id="sr-controls">
+      <button class="sr-btn sr-again" id="sr-again" title="Key: 1">Again</button>
+      <button class="sr-btn sr-good"  id="sr-good"  title="Key: 2">Good</button>
+      <button class="sr-btn sr-easy"  id="sr-easy"  title="Key: 3">Easy</button>
+      <button class="sr-btn sr-known" id="sr-known" title="Key: K">Mark Known</button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="deck-toolbar">
+      <button class="btn-secondary" id="shuffle-btn" title="Key: S">⇌ Shuffle</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-value" id="stat-known">0</span>
+        <span class="stat-label">Known</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-due">0</span>
+        <span class="stat-label">Due today</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-total">25</span>
+        <span class="stat-label">Total</span>
+      </div>
+    </div>
+
+    <p class="learn-next"><a href="sql.html">Learn next: SQL →</a></p>
+  </main>
+
+  <script>
+  var DECK_ID = 'lets-learn-claude-code';
+  var CARDS = [
+    { q: 'What is Claude Code?', a: 'An AI coding agent — not just a chat tool — that can autonomously read files, write code, run commands, and operate across your entire codebase inside your terminal or IDE.' },
+    { q: 'How is Claude Code different from a chat-based AI tool?', a: 'A chat tool only converses. Claude Code is an agentic system: it takes actions — reading files, running tests, editing code, executing commands — in an autonomous loop until the task is done.' },
+    { q: 'What is the agentic loop?', a: 'The core mechanism where Claude Code repeatedly reasons, calls tools (read file, run command, edit code), observes the result, and decides the next step — cycling until the goal is achieved.' },
+    { q: 'What platforms and editors does Claude Code support?', a: 'Terminal (any shell), VS Code, JetBrains IDEs, the Claude desktop app, and a web-based interface.' },
+    { q: 'What are the prerequisites for using Claude Code?', a: 'Basic familiarity with a code editor and the command line, plus a Claude Pro, Max, or Enterprise subscription — or an Anthropic API key.' },
+    { q: 'What is the four-phase Claude Code workflow?', a: 'Explore → Plan → Code → Commit. First understand the codebase, then plan the approach, then implement, then commit with a clear message.' },
+    { q: 'What happens in the Explore phase?', a: 'Claude Code reads and searches the codebase to build context — understanding file structure, existing patterns, dependencies, and relevant code before touching anything.' },
+    { q: 'What happens in the Plan phase?', a: 'Claude Code (or you in Plan Mode) lays out the steps to complete the task — which files to change, what logic to add, and in what order — before writing any code.' },
+    { q: 'What is Plan Mode in Claude Code?', a: 'A mode where Claude Code outlines its intended approach and waits for your approval before executing any actions, giving you a chance to redirect or refine the plan.' },
+    { q: 'What happens in the Code phase?', a: 'Claude Code implements the plan — creating or editing files, writing code, and running commands — guided by what it learned in Explore and decided in Plan.' },
+    { q: 'What happens in the Commit phase?', a: 'Claude Code stages changes and creates a descriptive git commit, summarising what was changed and why, completing the development loop.' },
+    { q: 'What is "approval mode" in Claude Code?', a: 'A setting where Claude Code asks for your confirmation before executing each action (file write, command run, etc.), giving you fine-grained control over what it does.' },
+    { q: 'What is auto-accept in Claude Code?', a: 'A mode that lets Claude Code execute actions without pausing for approval each time — useful for trusted, well-understood tasks where you want uninterrupted flow.' },
+    { q: 'What is the CLAUDE.md file?', a: 'A markdown file in your project root that gives Claude Code persistent memory about the project — conventions, architecture, commands to run, things to avoid — loaded automatically each session.' },
+    { q: 'Why is CLAUDE.md useful?', a: 'Without it, you must re-explain project context every session. CLAUDE.md lets Claude Code know your stack, coding standards, test commands, and any project-specific rules from the start.' },
+    { q: 'What are Subagents in Claude Code?', a: 'Delegated agents spun up to handle a sub-task independently, so the main agent\'s context window stays focused and uncluttered while parallel or isolated work is done separately.' },
+    { q: 'What are Skills in Claude Code?', a: 'Pre-built or custom slash-command capabilities that extend Claude Code\'s default behaviour — for example /code-review, /simplify, or a custom workflow you define.' },
+    { q: 'What are MCP Servers in Claude Code?', a: 'Model Context Protocol servers that connect Claude Code to external tools and data sources — databases, APIs, services — so it can retrieve live information or trigger external actions.' },
+    { q: 'What are Hooks in Claude Code?', a: 'Shell commands that run automatically at specific events (e.g. before a tool call, after a commit) to enforce formatting, block certain commands, or trigger notifications deterministically.' },
+    { q: 'What is the /compact command?', a: 'Optimises token usage by summarising older parts of the conversation, reducing context window consumption so you can keep working on long tasks without hitting the limit.' },
+    { q: 'What is the /clear command?', a: 'Removes sections of context from the conversation — useful for wiping irrelevant history and giving Claude Code a cleaner working state for a new sub-task.' },
+    { q: 'What is the /context command?', a: 'Shows the current state of the context window — what Claude Code can currently "see" — so you can understand what information is in scope.' },
+    { q: 'What are Tools & Permissions in Claude Code?', a: 'The system that controls which actions Claude Code is allowed to take — reading files, running shell commands, making network requests — configurable per project or globally.' },
+    { q: 'How does Claude Code help with code review?', a: 'It can read a diff or branch, identify bugs, spot style issues, suggest simplifications, and even post inline comments on a GitHub PR — all from the terminal.' },
+    { q: 'What is context window management and why does it matter in Claude Code?', a: 'Managing how much text is in the active conversation. A full context window slows performance and can cause Claude Code to lose earlier details — /compact and /clear help keep it efficient.' }
+  ];
+  </script>
+  <script src="app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', function () { initDeck(DECK_ID, CARDS); });</script>
+</body>
+</html>
