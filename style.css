@@ -368,6 +368,19 @@ kbd {
 .file-input-label:hover { background: var(--border); }
 input[type="file"] { display: none; }
 
+.data-disclaimer {
+  flex: 0 0 100%;
+  font-size: .78rem;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: .55rem .85rem;
+  margin-top: .35rem;
+  line-height: 1.5;
+}
+
 /* ===== Back link ===== */
 .back-link {
   font-size: .875rem;
