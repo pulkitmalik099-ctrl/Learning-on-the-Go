@@ -1,6 +1,64 @@
+/* ===== Session timeout (3 min inactivity) ===== */
+var _timeoutId;
+var TIMEOUT_MS = 3 * 60 * 1000; /* 3 minutes */
+
+function resetInactivityTimer() {
+  clearTimeout(_timeoutId);
+  _timeoutId = setTimeout(function () {
+    sessionStorage.removeItem('lottg_auth');
+    showTimeoutOverlay();
+  }, TIMEOUT_MS);
+}
+
+function showTimeoutOverlay() {
+  var existing = document.getElementById('timeout-overlay');
+  if (existing) return;
+  var overlay = document.createElement('div');
+  overlay.id = 'timeout-overlay';
+  overlay.className = 'login-overlay';
+  overlay.innerHTML =
+    '<div class="login-box">' +
+      '<div class="login-title">Still there?</div>' +
+      '<div class="login-tagline" style="color:var(--text-muted)">You were inactive for 3 minutes.<br>Enter the passphrase to continue.</div>' +
+      '<input class="login-input" id="timeout-inp" type="text" placeholder="Type the passphrase…" autocomplete="off" spellcheck="false">' +
+      '<div class="login-err" id="timeout-err"></div>' +
+      '<button class="login-submit" id="timeout-submit">Continue →</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+
+  var inp = overlay.querySelector('#timeout-inp');
+  var err = overlay.querySelector('#timeout-err');
+  var btn = overlay.querySelector('#timeout-submit');
+  setTimeout(function () { inp.focus(); }, 60);
+
+  function tryResume() {
+    if (inp.value.trim().toLowerCase() === 'napster you are the best') {
+      sessionStorage.setItem('lottg_auth', '1');
+      overlay.style.transition = 'opacity 0.25s';
+      overlay.style.opacity = '0';
+      setTimeout(function () { overlay.remove(); resetInactivityTimer(); }, 260);
+    } else {
+      inp.classList.remove('shake');
+      void inp.offsetWidth;
+      inp.classList.add('shake');
+      err.textContent = 'Not quite — try again.';
+      inp.select();
+    }
+  }
+  btn.addEventListener('click', tryResume);
+  inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') tryResume(); });
+}
+
+function startInactivityWatch() {
+  ['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(function (ev) {
+    document.addEventListener(ev, resetInactivityTimer, { passive: true });
+  });
+  resetInactivityTimer();
+}
+
 /* ===== Login ===== */
 function initLogin(onSuccess) {
-  if (sessionStorage.getItem('lottg_auth') === '1') { onSuccess && onSuccess(); return; }
+  if (sessionStorage.getItem('lottg_auth') === '1') { startInactivityWatch(); onSuccess && onSuccess(); return; }
 
   var overlay = document.createElement('div');
   overlay.className = 'login-overlay';
@@ -25,7 +83,7 @@ function initLogin(onSuccess) {
       sessionStorage.setItem('lottg_auth', '1');
       overlay.style.transition = 'opacity 0.25s';
       overlay.style.opacity = '0';
-      setTimeout(function () { overlay.remove(); onSuccess && onSuccess(); }, 260);
+      setTimeout(function () { overlay.remove(); startInactivityWatch(); onSuccess && onSuccess(); }, 260);
     } else {
       inp.classList.remove('shake');
       void inp.offsetWidth; /* restart animation */

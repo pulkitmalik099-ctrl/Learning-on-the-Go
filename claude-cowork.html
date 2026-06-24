@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Claude Cowork – Learning on the Go</title>
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('lottg_theme') || 'light');</script>
+</head>
+<body>
+  <header class="page-header">
+    <a class="back-link" href="index.html">← Topics</a>
+    <h1>Introduction to Claude Cowork</h1>
+    <div class="header-actions">
+      <button class="theme-btn" id="theme-toggle" title="Toggle dark mode">☾</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="deck-header">
+      <p class="deck-meta-line">Based on the <a href="https://anthropic.skilljar.com/introduction-to-claude-cowork" target="_blank" rel="noopener">Introduction to Claude Cowork course</a> · 25 cards</p>
+    </div>
+
+    <!-- In-deck search -->
+    <div class="deck-search-wrap">
+      <span style="color:var(--text-muted);font-size:0.9rem">⌕</span>
+      <input type="search" id="deck-search" placeholder="Search within this deck…" autocomplete="off">
+    </div>
+    <p class="search-matches" id="search-matches"></p>
+
+    <!-- Progress bar -->
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <span class="progress-text" id="progress-text">0 / 25</span>
+    </div>
+
+    <!-- Flashcard -->
+    <div class="card-viewport">
+      <div class="card-inner" id="card-inner">
+        <div class="card-face card-front">
+          <p class="card-text" id="card-q"></p>
+          <span class="card-hint">click · tap · space to flip</span>
+        </div>
+        <div class="card-face card-back">
+          <p class="card-text" id="card-a"></p>
+          <span class="card-hint">flip again to return</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="card-nav">
+      <button class="nav-btn" id="prev-btn" title="Previous (←)">‹</button>
+      <button class="flip-btn" id="flip-btn">Flip</button>
+      <button class="nav-btn" id="next-btn" title="Next (→)">›</button>
+    </div>
+    <p class="card-pos" id="card-pos">Card 1 of 25</p>
+
+    <!-- Spaced repetition controls (appear after flip) -->
+    <div class="sr-controls hidden" id="sr-controls">
+      <button class="sr-btn sr-again" id="sr-again" title="Key: 1">Again</button>
+      <button class="sr-btn sr-good"  id="sr-good"  title="Key: 2">Good</button>
+      <button class="sr-btn sr-easy"  id="sr-easy"  title="Key: 3">Easy</button>
+      <button class="sr-btn sr-known" id="sr-known" title="Key: K">Mark Known</button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="deck-toolbar">
+      <button class="btn-secondary" id="shuffle-btn" title="Key: S">⇌ Shuffle</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-value" id="stat-known">0</span>
+        <span class="stat-label">Known</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-due">0</span>
+        <span class="stat-label">Due today</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="stat-total">25</span>
+        <span class="stat-label">Total</span>
+      </div>
+    </div>
+
+    <p class="learn-next"><a href="get-started-with-claude.html">← Back to: Get Started with Claude</a></p>
+  </main>
+
+  <script>
+  var DECK_ID = 'claude-cowork';
+  var CARDS = [
+    { q: 'What is Claude Cowork?', a: 'A mode where Claude works directly with your files, folders, and apps — reading, editing, and producing real outputs on your machine — rather than just having a conversation.' },
+    { q: 'What is the core difference between Claude Chat and Claude Cowork?', a: 'Chat is conversational — you exchange messages. Cowork is a working session — you assign a task, Claude plans and executes it on your actual files and apps, and you steer along the way.' },
+    { q: 'What are "real outputs" in Cowork?', a: 'Actual changes to your files, folders, and apps — edited documents, created spreadsheets, filled forms, organised folders — not just text responses you have to copy-paste yourself.' },
+    { q: 'What happens when you assign a task in Cowork?', a: 'Claude reads the task and context, forms an execution plan, carries out the steps (reading, editing, producing outputs), and pauses for your direction when needed.' },
+    { q: 'What does "course correction" mean in Cowork?', a: 'Steering Claude mid-task — providing feedback, clarifying intent, or redirecting steps while a multi-step job is in progress, rather than only reviewing the final output.' },
+    { q: 'How does context influence Claude\'s planning in Cowork?', a: 'The more context Claude has about your goal, preferred style, and past work, the more accurately it plans the steps and produces outputs that match what you actually need.' },
+    { q: 'What is standing context in Cowork?', a: 'Persistent instructions or project information that Claude carries into every Cowork session, so you don\'t have to re-explain your preferences, team conventions, or project background each time.' },
+    { q: 'How do you establish standing context in Cowork?', a: 'Through global instructions (applied to all sessions) and Projects (applied to a specific topic or workflow), both of which Claude reads automatically when a session starts.' },
+    { q: 'What are global instructions in Cowork?', a: 'Persistent preferences you set once that apply to every Cowork session — e.g. always use British English, never delete originals, save outputs to a specific folder.' },
+    { q: 'What are Projects in Cowork?', a: 'Scoped workspaces with their own standing context, files, and instructions for a specific ongoing task or team — Claude uses that project\'s context whenever you work within it.' },
+    { q: 'What are Skills in Cowork?', a: 'Saved, reusable task workflows you define — e.g. "format this report in our template" or "summarise meeting notes and email the team" — that Claude can execute on command.' },
+    { q: 'What are Plugins in Cowork?', a: 'Extensions that encode team expertise and procedures into Cowork, enabling Claude to follow your organisation\'s specific processes automatically without being re-instructed each time.' },
+    { q: 'How do you validate custom Skills and Plugins?', a: 'Run them on test inputs, review the outputs against your expected results, and refine the instructions until Claude consistently performs the task correctly before sharing with the team.' },
+    { q: 'How do you share Skills or Plugins with teammates?', a: 'Export and distribute the build so team members can install the same skill or plugin, ensuring everyone benefits from the same encoded workflow without rebuilding it individually.' },
+    { q: 'How does Cowork integrate with Chrome?', a: 'A Chrome extension lets Claude access and interact with web-based apps directly in the browser — reading page content, filling forms, navigating, and automating browser-based tasks.' },
+    { q: 'How does Cowork integrate with Microsoft 365?', a: 'Claude can read and edit Word documents, Excel spreadsheets, Outlook emails, and other M365 files — treating them as first-class working documents rather than attachments to describe.' },
+    { q: 'What platforms does Cowork support?', a: 'Local files and folders on your machine, Chrome browser (via extension), Microsoft 365 applications, and additional platforms through plugins.' },
+    { q: 'What are best practices for collaborative safety in Cowork?', a: 'Review Claude\'s plan before it executes destructive actions, keep backups of important files, validate skills before sharing, and set clear instructions about what Claude should never do.' },
+    { q: 'How should you manage longer-running tasks in Cowork?', a: 'Break them into phases, review outputs at each milestone, use course corrections to stay aligned, and avoid giving Claude an overly broad mandate without checkpoints.' },
+    { q: 'What is the goal of a first Cowork task?', a: 'To build foundational confidence — pick a low-stakes, self-contained task so you can observe how Claude plans, executes, and handles your files before trusting it with critical work.' },
+    { q: 'How do you get faster, higher-quality results in Cowork?', a: 'Invest in standing context (global instructions + projects), build reusable skills for repeated workflows, and give precise upfront context so Claude plans accurately from the start.' },
+    { q: 'What is the typical progression for a new Cowork user?', a: 'Initial launch → first end-to-end task → learning to steer with course corrections → customising with instructions and skills → integrating plugins for team workflows → confident daily use.' },
+    { q: 'Why is upfront context important in Cowork vs Chat?', a: 'In Chat a clarification mid-conversation is easy. In Cowork, Claude may have already edited files by the time you clarify — good upfront context prevents costly mid-task rework.' },
+    { q: 'What kinds of files can Cowork read and edit?', a: 'Documents (Word, PDF, text), spreadsheets (Excel, CSV), emails, folders, and web content in Chrome — essentially any file type your machine can open that a plugin or integration covers.' },
+    { q: 'What makes Cowork suitable for team use?', a: 'Shareable skills and plugins encode team expertise once and deploy it to everyone, so the whole team benefits from consistent, high-quality automated workflows without individual setup.' }
+  ];
+  </script>
+  <script src="app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', function () { initLogin(function () { initDeck(DECK_ID, CARDS); }); });</script>
+</body>
+</html>
